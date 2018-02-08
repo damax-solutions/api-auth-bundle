@@ -17,5 +17,10 @@
   },
   "autoload": {
     "psr-4": { "Damax\\Bundle\\ApiAuthBundle\\": "" }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.1.x-dev"
+    }
   }
 }
