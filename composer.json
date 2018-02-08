@@ -3,6 +3,8 @@
   "type": "symfony-bundle",
   "description": "Authentication with api key or JWT.",
   "require": {
+    "symfony/config": "^4.0",
+    "symfony/dependency-injection": "^4.0",
     "symfony/security": "^4.0"
   },
   "config": {
@@ -10,8 +12,7 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.10",
-    "symfony/config": "^4.0",
-    "symfony/dependency-injection": "^4.0",
+    "matthiasnoback/symfony-dependency-injection-test": "^2.3",
     "symfony/phpunit-bridge": "^4.0"
   },
   "autoload": {

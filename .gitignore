@@ -1,5 +1,4 @@
 /build
 /vendor
-/auth.json
 .php_cs
 .php_cs.cache

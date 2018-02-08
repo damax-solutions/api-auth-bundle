@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle;
 
-class DamaxApiAuthBundle
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
+class DamaxApiAuthBundle extends Bundle
 {
 }
