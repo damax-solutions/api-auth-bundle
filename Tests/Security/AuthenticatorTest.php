@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Tests\Security;
 
+use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Security\Authenticator;
 use Damax\Bundle\ApiAuthBundle\Security\UserProvider;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,11 @@ class AuthenticatorTest extends TestCase
     private $request;
 
     /**
+     * @var Extractor|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $extractor;
+
+    /**
      * @var Authenticator
      */
     private $authenticator;
@@ -30,7 +36,8 @@ class AuthenticatorTest extends TestCase
     protected function setUp()
     {
         $this->request = new Request();
-        $this->authenticator = new Authenticator('Authorization');
+        $this->extractor = $this->createMock(Extractor::class);
+        $this->authenticator = new Authenticator($this->extractor);
     }
 
     /**
@@ -38,13 +45,28 @@ class AuthenticatorTest extends TestCase
      */
     public function it_supports_authentication()
     {
-        $this->assertFalse($this->authenticator->supports($this->request));
+        $this->extractor
+            ->expects($this->once())
+            ->method('extractKey')
+            ->with($this->identicalTo($this->request))
+            ->willReturn('ABC')
+        ;
 
-        $this->request->headers->set('Authorization', 'ABC');
-        $this->assertFalse($this->authenticator->supports($this->request));
-
-        $this->request->headers->set('Authorization', 'Token ABC');
         $this->assertTrue($this->authenticator->supports($this->request));
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_support_authentication()
+    {
+        $this->extractor
+            ->expects($this->once())
+            ->method('extractKey')
+            ->with($this->identicalTo($this->request))
+        ;
+
+        $this->assertFalse($this->authenticator->supports($this->request));
     }
 
     /**
@@ -64,7 +86,12 @@ class AuthenticatorTest extends TestCase
      */
     public function it_retrieves_credentials()
     {
-        $this->request->headers->set('Authorization', 'Token ABC');
+        $this->extractor
+            ->expects($this->once())
+            ->method('extractKey')
+            ->with($this->identicalTo($this->request))
+            ->willReturn('ABC')
+        ;
         $this->assertEquals(['token' => 'ABC'], $this->authenticator->getCredentials($this->request));
     }
 

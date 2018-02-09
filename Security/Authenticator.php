@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Security;
 
+use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,18 +19,16 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
  */
 class Authenticator extends AbstractGuardAuthenticator
 {
-    private $authHeader;
+    private $extractor;
 
-    public function __construct(string $authHeader)
+    public function __construct(Extractor $extractor)
     {
-        $this->authHeader = $authHeader;
+        $this->extractor = $extractor;
     }
 
     public function supports(Request $request): bool
     {
-        $header = $request->headers->get($this->authHeader, '');
-
-        return $header ? 0 === strpos($header, 'Token ') : false;
+        return null !== $this->extractor->extractKey($request);
     }
 
     public function start(Request $request, AuthenticationException $authException = null): Response
@@ -41,7 +40,7 @@ class Authenticator extends AbstractGuardAuthenticator
 
     public function getCredentials(Request $request): array
     {
-        return ['token' => substr($request->headers->get($this->authHeader), 6)];
+        return ['token' => $this->extractor->extractKey($request)];
     }
 
     public function getUser($credentials, UserProviderInterface $provider): UserInterface
