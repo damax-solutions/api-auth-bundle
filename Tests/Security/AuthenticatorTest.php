@@ -6,7 +6,6 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Security;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Security\Authenticator;
-use Damax\Bundle\ApiAuthBundle\Security\UserProvider;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,8 +35,12 @@ class AuthenticatorTest extends TestCase
     protected function setUp()
     {
         $this->request = new Request();
-        $this->extractor = $this->createMock(Extractor::class);
-        $this->authenticator = new Authenticator($this->extractor);
+        $this->extractor = $extractor = $this->createMock(Extractor::class);
+        $this->authenticator = new class($extractor) extends Authenticator {
+            public function getUser($credentials, UserProviderInterface $userProvider)
+            {
+            }
+        };
     }
 
     /**
@@ -92,38 +95,7 @@ class AuthenticatorTest extends TestCase
             ->with($this->identicalTo($this->request))
             ->willReturn('ABC')
         ;
-        $this->assertEquals(['token' => 'ABC'], $this->authenticator->getCredentials($this->request));
-    }
-
-    /**
-     * @test
-     */
-    public function it_retrieves_user_by_api_key()
-    {
-        $user = $this->authenticator->getUser(['token' => 'ABC'], new UserProvider(['user' => 'ABC']));
-
-        $this->assertEquals('user', $user->getUsername());
-    }
-
-    /**
-     * @test
-     */
-    public function it_retrieves_user_by_username()
-    {
-        /** @var UserInterface $user */
-        $user = $this->createMock(UserInterface::class);
-
-        /** @var UserProviderInterface|PHPUnit_Framework_MockObject_MockObject $provider */
-        $provider = $this->createMock(UserProviderInterface::class);
-
-        $provider
-            ->expects($this->once())
-            ->method('loadUserByUsername')
-            ->with('ABC')
-            ->willReturn($user)
-        ;
-
-        $this->assertSame($user, $this->authenticator->getUser(['token' => 'ABC'], $provider));
+        $this->assertEquals('ABC', $this->authenticator->getCredentials($this->request));
     }
 
     /**

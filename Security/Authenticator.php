@@ -11,13 +11,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 /**
  * @see https://symfony.com/doc/current/_images/authentication-guard-methods.png
  */
-class Authenticator extends AbstractGuardAuthenticator
+abstract class Authenticator extends AbstractGuardAuthenticator
 {
     private $extractor;
 
@@ -33,23 +32,12 @@ class Authenticator extends AbstractGuardAuthenticator
 
     public function start(Request $request, AuthenticationException $authException = null): Response
     {
-        $code = Response::HTTP_UNAUTHORIZED;
-
-        return JsonResponse::create(['message' => Response::$statusTexts[$code]], $code);
+        return $this->errorResponse(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function getCredentials(Request $request): array
+    public function getCredentials(Request $request): string
     {
-        return ['token' => $this->extractor->extractKey($request)];
-    }
-
-    public function getUser($credentials, UserProviderInterface $provider): UserInterface
-    {
-        if ($provider instanceof ApiKeyUserProvider) {
-            return $provider->loadUserByApiKey($credentials['token']);
-        }
-
-        return $provider->loadUserByUsername($credentials['token']);
+        return $this->extractor->extractKey($request);
     }
 
     public function checkCredentials($credentials, UserInterface $user): bool
@@ -64,13 +52,16 @@ class Authenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $code = Response::HTTP_FORBIDDEN;
-
-        return JsonResponse::create(['message' => Response::$statusTexts[$code]], $code);
+        return $this->errorResponse(Response::HTTP_FORBIDDEN);
     }
 
     public function supportsRememberMe(): bool
     {
         return false;
+    }
+
+    private function errorResponse(int $code): JsonResponse
+    {
+        return JsonResponse::create(['message' => Response::$statusTexts[$code]], $code);
     }
 }

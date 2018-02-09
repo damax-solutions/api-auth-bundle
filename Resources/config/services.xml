@@ -15,7 +15,7 @@
             <argument>%damax.api_auth.tokens%</argument>
         </service>
 
-        <service id="Damax\Bundle\ApiAuthBundle\Security\Authenticator" />
+        <service id="Damax\Bundle\ApiAuthBundle\Security\ApiKeyAuthenticator" />
 
     </services>
 </container>
