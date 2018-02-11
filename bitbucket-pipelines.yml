@@ -7,7 +7,12 @@ pipelines:
           - composer
         script:
           - php -r "readfile('https://getcomposer.org/installer');" | php && mv composer.phar /usr/local/bin/composer
-          - apt-get update && apt-get install -y zlib1g-dev && docker-php-ext-install zip
-          - apt-get update && apt-get install -y git
+
+          # Git
+          - apt-get update && apt-get install -y git && rm -r /var/lib/apt/lists/*
+
+          # Zip
+          - apt-get update && apt-get install -y zlib1g-dev && docker-php-ext-install zip && rm -r /var/lib/apt/lists/*
+
           - composer install
           - vendor/bin/simple-phpunit --log-junit ./test-reports/junit.xml
