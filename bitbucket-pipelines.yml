@@ -6,7 +6,7 @@ pipelines:
         caches:
           - composer
         script:
-          - cd /usr/local/bin && php -r "readfile('https://getcomposer.org/installer');" | php && mv composer.phar composer
+          - php -r "readfile('https://getcomposer.org/installer');" | php && mv composer.phar /usr/local/bin/composer
           - apt-get update && apt-get install -y zlib1g-dev && docker-php-ext-install zip
           - composer install
           - vendor/bin/simple-phpunit
