@@ -10,4 +10,4 @@ pipelines:
           - apt-get update && apt-get install -y zlib1g-dev && docker-php-ext-install zip
           - apt-get update && apt-get install -y git
           - composer install
-          - vendor/bin/simple-phpunit
+          - vendor/bin/simple-phpunit --log-junit ./test-reports/junit.xml
