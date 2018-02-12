@@ -87,21 +87,21 @@ class LcobucciProviderTest extends TestCase
                 $this->assertContainsOnlyInstancesOf(Constraint::class, $constraints);
 
                 $constraint = $constraints[0];
-                $this->assertInstanceOf(Constraint\IssuedBy::class, $constraint);
-                $this->assertAttributeEquals(['github', 'bitbucket'], 'issuers', $constraint);
-
-                $constraint = $constraints[1];
-                $this->assertInstanceOf(Constraint\PermittedFor::class, $constraint);
-                $this->assertAttributeEquals('app', 'audience', $constraint);
-
-                $constraint = $constraints[2];
                 $this->assertInstanceOf(Constraint\ValidAt::class, $constraint);
                 $this->assertAttributeSame($this->clock, 'clock', $constraint);
 
-                $constraint = $constraints[3];
+                $constraint = $constraints[1];
                 $this->assertInstanceOf(Constraint\SignedWith::class, $constraint);
                 $this->assertAttributeSame($this->signer, 'signer', $constraint);
                 $this->assertAttributeSame($this->key, 'key', $constraint);
+
+                $constraint = $constraints[2];
+                $this->assertInstanceOf(Constraint\IssuedBy::class, $constraint);
+                $this->assertAttributeEquals(['github', 'bitbucket'], 'issuers', $constraint);
+
+                $constraint = $constraints[3];
+                $this->assertInstanceOf(Constraint\PermittedFor::class, $constraint);
+                $this->assertAttributeEquals('app', 'audience', $constraint);
 
                 return true;
             })

@@ -18,16 +18,21 @@ class LcobucciProvider implements TokenParser
      */
     private $constraints;
 
-    public function __construct(Configuration $config, Clock $clock, array $issuers, string $audience)
+    public function __construct(Configuration $config, Clock $clock, array $issuers = null, string $audience = null)
     {
         $this->config = $config;
 
         $this
-            ->addConstraint(new Constraint\IssuedBy(...$issuers))
-            ->addConstraint(new Constraint\PermittedFor($audience))
             ->addConstraint(new Constraint\ValidAt($clock))
             ->addConstraint(new Constraint\SignedWith($this->config->getSigner(), $this->config->getVerificationKey()))
         ;
+
+        if ($issuers) {
+            $this->addConstraint(new Constraint\IssuedBy(...$issuers));
+        }
+        if ($audience) {
+            $this->addConstraint(new Constraint\PermittedFor($audience));
+        }
     }
 
     public function isValid(string $jwt): bool

@@ -28,6 +28,15 @@ class ConfigurationTest extends TestCase
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
                 ],
             ],
+            'jwt' => [
+                'enabled' => false,
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
+                ],
+                'builder' => [
+                    'ttl' => 3600,
+                ],
+            ],
             'format_exceptions' => true,
         ]);
     }
@@ -61,7 +70,7 @@ class ConfigurationTest extends TestCase
             'api_key' => [
                 'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
                 'extractors' => [
-                    ['type' => 'header', 'name' => 'Authorization'],
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
                     ['type' => 'query', 'name' => 'api_key'],
                     ['type' => 'cookie', 'name' => 'api_key'],
                 ],
@@ -73,12 +82,177 @@ class ConfigurationTest extends TestCase
                 'enabled' => true,
                 'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
                 'extractors' => [
-                    ['type' => 'header', 'name' => 'Authorization'],
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
                     ['type' => 'query', 'name' => 'api_key'],
                     ['type' => 'cookie', 'name' => 'api_key'],
                 ],
             ],
         ], 'api_key');
+    }
+
+    /**
+     * @test
+     */
+    public function it_processes_basic_jwt_config()
+    {
+        $config = [
+            'jwt' => [
+                'builder' => [
+                    'issuer' => 'damax-api-auth-bundle',
+                    'audience' => 'symfony',
+                    'ttl' => 600,
+                ],
+                'parser' => [
+                    'issuers' => ['symfony', 'zend'],
+                ],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
+                    ['type' => 'query', 'name' => 'token'],
+                    ['type' => 'cookie', 'name' => 'token'],
+                ],
+                'signer' => [
+                    'signing_key' => 'secret',
+                ],
+            ],
+        ];
+
+        $this->assertProcessedConfigurationEquals([$config], [
+            'jwt' => [
+                'enabled' => true,
+                'builder' => [
+                    'issuer' => 'damax-api-auth-bundle',
+                    'audience' => 'symfony',
+                    'ttl' => 600,
+                ],
+                'parser' => [
+                    'issuers' => ['symfony', 'zend'],
+                ],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
+                    ['type' => 'query', 'name' => 'token'],
+                    ['type' => 'cookie', 'name' => 'token'],
+                ],
+                'signer' => [
+                    'type' => 'symmetric',
+                    'algorithm' => 'HS256',
+                    'signing_key' => 'secret',
+                    'passphrase' => '',
+                ],
+            ],
+        ], 'jwt');
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_verification_key_for_asymmetric_signer()
+    {
+        $config = [
+            'jwt' => [
+                'signer' => [
+                    'type' => 'asymmetric',
+                    'signing_key' => 'secret',
+                ],
+            ],
+        ];
+
+        $this->assertPartialConfigurationIsInvalid([$config], 'jwt', 'Verification key must be specified for "asymmetric" signer.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_hmac_algorithm_for_symmetric_signer()
+    {
+        $config = [
+            'jwt' => [
+                'signer' => [
+                    'type' => 'symmetric',
+                    'algorithm' => 'RS256',
+                    'signing_key' => 'secret',
+                ],
+            ],
+        ];
+
+        $this->assertPartialConfigurationIsInvalid([$config], 'jwt', 'HMAC algorithm must be specified for "symmetric" signer.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_rsa_algorithm_for_asymmetric_signer()
+    {
+        $config = [
+            'jwt' => [
+                'signer' => [
+                    'type' => 'asymmetric',
+                    'algorithm' => 'HS256',
+                    'signing_key' => 'signing_secret',
+                    'verification_key' => 'verification_secret',
+                ],
+            ],
+        ];
+
+        $this->assertPartialConfigurationIsInvalid([$config], 'jwt', 'RSA or ECDSA algorithm must be specified for "asymmetric" signer.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_readable_signing_and_verification_key()
+    {
+        $config = [
+            'jwt' => [
+                'signer' => [
+                    'type' => 'asymmetric',
+                    'algorithm' => 'RS256',
+                    'signing_key' => 'signing_secret',
+                    'verification_key' => 'verification_secret',
+                ],
+            ],
+        ];
+
+        $this->assertPartialConfigurationIsInvalid([$config], 'jwt', 'Signing and/or verification key is not readable.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_processes_jwt_config()
+    {
+        $filename = tempnam(sys_get_temp_dir(), 'key_');
+
+        $config = [
+            'jwt' => [
+                'signer' => [
+                    'type' => 'asymmetric',
+                    'algorithm' => 'RS256',
+                    'signing_key' => $filename,
+                    'verification_key' => $filename,
+                ],
+            ],
+        ];
+
+        $this->assertProcessedConfigurationEquals([$config], [
+            'jwt' => [
+                'enabled' => true,
+                'builder' => [
+                    'ttl' => 3600,
+                ],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
+                ],
+                'signer' => [
+                    'type' => 'asymmetric',
+                    'algorithm' => 'RS256',
+                    'signing_key' => 'file://' . $filename,
+                    'verification_key' => 'file://' . $filename,
+                    'passphrase' => '',
+                ],
+            ],
+        ], 'jwt');
+
+        unlink($filename);
     }
 
     protected function getConfiguration(): ConfigurationInterface

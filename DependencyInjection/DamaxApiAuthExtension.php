@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\DependencyInjection;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
+use Damax\Bundle\ApiAuthBundle\Jwt\LcobucciProvider;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKeyAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\JwtAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\UserProvider;
+use Lcobucci\Clock\SystemClock;
+use Lcobucci\JWT\Configuration as JwtConfiguration;
+use Lcobucci\JWT\Signer\Key;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -23,6 +28,10 @@ class DamaxApiAuthExtension extends ConfigurableExtension
 
         if ($config['api_key']['enabled']) {
             $this->configureApiKey($config['api_key'], $container);
+        }
+
+        if ($config['jwt']['enabled']) {
+            $this->configureJwt($config['jwt'], $container);
         }
 
         if ($config['format_exceptions']) {
@@ -43,6 +52,65 @@ class DamaxApiAuthExtension extends ConfigurableExtension
         return $this;
     }
 
+    private function configureJwt(array $config, ContainerBuilder $container): self
+    {
+        $signer = $this->configureJwtSigner($config['signer']);
+
+        $configuration = (new Definition(JwtConfiguration::class))
+            ->setFactory(JwtConfiguration::class . '::forSymmetricSigner')
+            ->addArgument($signer)
+            ->addArgument(new Definition(Key::class, [
+                $config['signer']['signing_key'],
+                $config['signer']['passphrase'],
+            ]))
+        ;
+
+        if (Configuration::SIGNER_ASYMMETRIC === $config['signer']['type']) {
+            $configuration
+                ->setFactory(JwtConfiguration::class . '::forAsymmetricSigner')
+                ->addArgument(new Definition(Key::class, [
+                    $config['signer']['verification_key'],
+                ]))
+            ;
+        }
+
+        $parser = (new Definition(LcobucciProvider::class))
+            ->addArgument($configuration)
+            ->addArgument(new Definition(SystemClock::class))
+            ->addArgument($config['parser']['issuers'] ?? null)
+            ->addArgument($config['builder']['audience'] ?? null)
+        ;
+
+        $extractors = $this->configureExtractors($config['extractors']);
+
+        // Authenticator.
+        $container->setDefinition('damax.api_auth.jwt.authenticator', new Definition(JwtAuthenticator::class, [
+            $extractors,
+            $parser,
+            $config['identity_claim'] ?? null,
+        ]));
+
+        return $this;
+    }
+
+    private function configureExceptions(ContainerBuilder $container): self
+    {
+        $container
+            ->getDefinition(ExceptionListener::class)
+            ->addTag('kernel.event_listener', ['event' => 'kernel.exception', 'method' => 'onKernelException'])
+        ;
+
+        return $this;
+    }
+
+    private function configureJwtSigner(array $config): Definition
+    {
+        $dirs = ['HS' => 'Hmac', 'RS' => 'Rsa', 'ES' => 'Ecdsa'];
+        $algo = $config['algorithm'];
+
+        return new Definition('Lcobucci\\JWT\\Signer\\' . $dirs[substr($algo, 0, 2)] . '\\Sha' . substr($algo, 2));
+    }
+
     private function configureExtractors(array $config): Definition
     {
         $extractors = [];
@@ -57,15 +125,5 @@ class DamaxApiAuthExtension extends ConfigurableExtension
         }
 
         return new Definition(ChainExtractor::class, [$extractors]);
-    }
-
-    private function configureExceptions(ContainerBuilder $container): self
-    {
-        $container
-            ->getDefinition(ExceptionListener::class)
-            ->addTag('kernel.event_listener', ['event' => 'kernel.exception', 'method' => 'onKernelException'])
-        ;
-
-        return $this;
     }
 }
