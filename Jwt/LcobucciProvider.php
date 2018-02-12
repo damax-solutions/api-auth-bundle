@@ -32,7 +32,7 @@ class LcobucciProvider implements TokenParser
 
     public function isValid(string $jwt): bool
     {
-        return $this->config->getValidator()->validate($this->parseJwt($jwt), $this->constraints);
+        return $this->config->getValidator()->validate($this->parseJwt($jwt), ...$this->constraints);
     }
 
     public function parse(string $jwt): Token
