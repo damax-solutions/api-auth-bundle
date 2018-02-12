@@ -7,15 +7,7 @@
 
         <defaults autowire="true" public="false" />
 
-        <service id="Damax\Bundle\ApiAuthBundle\Listener\ResponseListener">
-            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
-        </service>
-
-        <service id="Damax\Bundle\ApiAuthBundle\Security\UserProvider">
-            <argument>%damax.api_auth.tokens%</argument>
-        </service>
-
-        <service id="Damax\Bundle\ApiAuthBundle\Security\ApiKeyAuthenticator" />
+        <service id="Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener" />
 
     </services>
 </container>

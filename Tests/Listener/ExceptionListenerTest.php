@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Tests\Listener;
 
-use Damax\Bundle\ApiAuthBundle\Listener\ResponseListener;
+use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class ResponseListenerTest extends TestCase
+class ExceptionListenerTest extends TestCase
 {
     /**
      * @var LoggerInterface|PHPUnit_Framework_MockObject_MockObject
@@ -28,14 +28,14 @@ class ResponseListenerTest extends TestCase
     private $logger;
 
     /**
-     * @var ResponseListener
+     * @var ExceptionListener
      */
     private $listener;
 
     protected function setUp()
     {
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->listener = new ResponseListener($this->logger);
+        $this->listener = new ExceptionListener($this->logger);
     }
 
     /**

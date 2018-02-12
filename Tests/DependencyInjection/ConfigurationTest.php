@@ -18,32 +18,67 @@ class ConfigurationTest extends TestCase
      */
     public function it_processes_empty_config()
     {
-        $config = [
-        ];
+        $config = [];
 
         $this->assertProcessedConfigurationEquals([$config], [
-            'tokens' => [],
+            'api_key' => [
+                'enabled' => false,
+                'tokens' => [],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
+                ],
+            ],
+            'format_exceptions' => true,
         ]);
     }
 
     /**
      * @test
      */
-    public function it_processes_config()
+    public function it_processes_simplified_api_key_config()
     {
         $config = [
-            'tokens' => [
-                'foo' => 'bar',
-                'baz' => 'qux',
+            'api_key' => ['foo' => 'bar', 'baz' => 'qux'],
+        ];
+
+        $this->assertProcessedConfigurationEquals([$config], [
+            'api_key' => [
+                'enabled' => true,
+                'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
+                ],
+            ],
+        ], 'api_key');
+    }
+
+    /**
+     * @test
+     */
+    public function it_processes_api_key_config()
+    {
+        $config = [
+            'api_key' => [
+                'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization'],
+                    ['type' => 'query', 'name' => 'api_key'],
+                    ['type' => 'cookie', 'name' => 'api_key'],
+                ],
             ],
         ];
 
         $this->assertProcessedConfigurationEquals([$config], [
-            'tokens' => [
-                'foo' => 'bar',
-                'baz' => 'qux',
+            'api_key' => [
+                'enabled' => true,
+                'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization'],
+                    ['type' => 'query', 'name' => 'api_key'],
+                    ['type' => 'cookie', 'name' => 'api_key'],
+                ],
             ],
-        ]);
+        ], 'api_key');
     }
 
     protected function getConfiguration(): ConfigurationInterface

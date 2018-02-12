@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2fc1568608b29fa3755283f5708f79a5",
+    "content-hash": "b866502eaed794551ff67d0542e2747c",
     "packages": [
         {
             "name": "lcobucci/clock",
@@ -1994,6 +1994,8 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^7.1"
+    },
     "platform-dev": []
 }
