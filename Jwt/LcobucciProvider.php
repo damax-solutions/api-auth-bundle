@@ -12,22 +12,22 @@ use Lcobucci\JWT\Validation\Constraint;
 class LcobucciProvider implements TokenParser
 {
     private $config;
-    private $clock;
 
     /**
      * @var Constraint[]
      */
     private $constraints;
 
-    public function __construct(Configuration $config, Clock $clock)
+    public function __construct(Configuration $config, Clock $clock, array $issuers, string $audience)
     {
         $this->config = $config;
-        $this->clock = $clock;
-    }
 
-    public function addConstraint(Constraint $constraint): void
-    {
-        $this->constraints[] = $constraint;
+        $this
+            ->addConstraint(new Constraint\IssuedBy(...$issuers))
+            ->addConstraint(new Constraint\PermittedFor($audience))
+            ->addConstraint(new Constraint\ValidAt($clock))
+            ->addConstraint(new Constraint\SignedWith($this->config->getSigner(), $this->config->getVerificationKey()))
+        ;
     }
 
     public function isValid(string $jwt): bool
@@ -38,6 +38,13 @@ class LcobucciProvider implements TokenParser
     public function parse(string $jwt): Token
     {
         return Token::fromClaims($this->parseJwt($jwt)->claims()->all());
+    }
+
+    private function addConstraint(Constraint $constraint): self
+    {
+        $this->constraints[] = $constraint;
+
+        return $this;
     }
 
     private function parseJwt(string $jwt): JwtToken
