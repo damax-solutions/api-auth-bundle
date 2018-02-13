@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\DependencyInjection;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
-use Damax\Bundle\ApiAuthBundle\Jwt\LcobucciProvider;
+use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
+use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\JwtAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\JwtHandler;
 use Damax\Bundle\ApiAuthBundle\Security\UserProvider;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfiguration;
@@ -56,6 +58,8 @@ class DamaxApiAuthExtension extends ConfigurableExtension
     {
         $signer = $this->configureJwtSigner($config['signer']);
 
+        $clock = new Definition(SystemClock::class);
+
         $configuration = (new Definition(JwtConfiguration::class))
             ->setFactory(JwtConfiguration::class . '::forSymmetricSigner')
             ->addArgument($signer)
@@ -74,10 +78,18 @@ class DamaxApiAuthExtension extends ConfigurableExtension
             ;
         }
 
-        $parser = (new Definition(LcobucciProvider::class))
+        $parser = (new Definition(Parser::class))
             ->addArgument($configuration)
-            ->addArgument(new Definition(SystemClock::class))
+            ->addArgument($clock)
             ->addArgument($config['parser']['issuers'] ?? null)
+            ->addArgument($config['parser']['audience'] ?? null)
+        ;
+
+        $builder = (new Definition(Builder::class))
+            ->addArgument($configuration)
+            ->addArgument($clock)
+            ->addArgument($config['builder']['ttl'])
+            ->addArgument($config['builder']['issuer'] ?? null)
             ->addArgument($config['builder']['audience'] ?? null)
         ;
 
@@ -88,6 +100,11 @@ class DamaxApiAuthExtension extends ConfigurableExtension
             $extractors,
             $parser,
             $config['identity_claim'] ?? null,
+        ]));
+
+        // Handler.
+        $container->setDefinition('damax.api_auth.jwt.handler', new Definition(JwtHandler::class, [
+            $builder,
         ]));
 
         return $this;

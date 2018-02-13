@@ -103,12 +103,15 @@ class Configuration implements ConfigurationInterface
                                 ->isRequired()
                             ->end()
                         ->end()
+                        ->scalarNode('audience')
+                            ->cannotBeEmpty()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('signer')
                     ->isRequired()
                     ->beforeNormalization()
-                        ->ifTrue(function (array $config): bool {
+                        ->ifTrue(function (?array $config): bool {
                             $type = $config['type'] ?? self::SIGNER_SYMMETRIC;
 
                             return self::SIGNER_ASYMMETRIC === $type;

@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Damax\Bundle\ApiAuthBundle\Tests\Jwt;
+namespace Damax\Bundle\ApiAuthBundle\Tests\Jwt\Lcobucci;
 
-use Damax\Bundle\ApiAuthBundle\Jwt\LcobucciProvider;
+use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use DateTimeImmutable;
-use Lcobucci\Clock\Clock;
 use Lcobucci\Clock\FrozenClock;
-use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Configuration as JwtConfiguration;
+use Lcobucci\JWT\Parser as JwtParser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint;
@@ -17,17 +16,17 @@ use Lcobucci\JWT\Validator;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
-class LcobucciProviderTest extends TestCase
+class ParserTest extends TestCase
 {
     /**
-     * @var Signer|PHPUnit_Framework_MockObject_MockObject
+     * @var Signer
      */
     private $signer;
 
     /**
-     * @var Parser|PHPUnit_Framework_MockObject_MockObject
+     * @var JwtParser|PHPUnit_Framework_MockObject_MockObject
      */
-    private $parser;
+    private $jwtParser;
 
     /**
      * @var Validator|PHPUnit_Framework_MockObject_MockObject
@@ -40,28 +39,28 @@ class LcobucciProviderTest extends TestCase
     private $key;
 
     /**
-     * @var Clock|PHPUnit_Framework_MockObject_MockObject
+     * @var FrozenClock
      */
     private $clock;
 
     /**
-     * @var LcobucciProvider
+     * @var Parser
      */
-    private $provider;
+    private $parser;
 
     protected function setUp()
     {
-        $this->signer = $this->createMock(Signer::class);
-        $this->parser = $this->createMock(Parser::class);
+        $this->signer = new Signer\None();
+        $this->jwtParser = $this->createMock(JwtParser::class);
         $this->validator = $this->createMock(Validator::class);
         $this->key = new Signer\Key('');
 
-        $config = Configuration::forSymmetricSigner($this->signer, $this->key);
-        $config->setParser($this->parser);
+        $config = JwtConfiguration::forSymmetricSigner($this->signer, $this->key);
+        $config->setParser($this->jwtParser);
         $config->setValidator($this->validator);
 
         $this->clock = new FrozenClock(new DateTimeImmutable('2018-02-09 06:10:00'));
-        $this->provider = new LcobucciProvider($config, $this->clock, ['github', 'bitbucket'], 'app');
+        $this->parser = new Parser($config, $this->clock, ['github', 'bitbucket'], 'app');
     }
 
     /**
@@ -72,7 +71,7 @@ class LcobucciProviderTest extends TestCase
         /** @var Token $token */
         $token = $this->createMock(Token::class);
 
-        $this->parser
+        $this->jwtParser
             ->expects($this->once())
             ->method('parse')
             ->with('XYZ')
@@ -107,7 +106,7 @@ class LcobucciProviderTest extends TestCase
             })
         ;
 
-        $this->assertTrue($this->provider->isValid('XYZ'));
+        $this->assertTrue($this->parser->isValid('XYZ'));
     }
 
     /**
@@ -119,13 +118,13 @@ class LcobucciProviderTest extends TestCase
 
         $jwtToken = new Token\Plain(new Token\DataSet([], ''), $claims, Token\Signature::fromEmptyData());
 
-        $this->parser
+        $this->jwtParser
             ->expects($this->once())
             ->method('parse')
             ->with('XYZ')
             ->willReturn($jwtToken)
         ;
 
-        $this->assertEquals(['foo' => 'bar', 'baz' => 'qux'], $this->provider->parse('XYZ')->all());
+        $this->assertEquals(['foo' => 'bar', 'baz' => 'qux'], $this->parser->parse('XYZ')->all());
     }
 }

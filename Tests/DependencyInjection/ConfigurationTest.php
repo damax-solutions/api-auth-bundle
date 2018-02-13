@@ -104,6 +104,7 @@ class ConfigurationTest extends TestCase
                 ],
                 'parser' => [
                     'issuers' => ['symfony', 'zend'],
+                    'audience' => 'zend',
                 ],
                 'extractors' => [
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
@@ -126,6 +127,7 @@ class ConfigurationTest extends TestCase
                 ],
                 'parser' => [
                     'issuers' => ['symfony', 'zend'],
+                    'audience' => 'zend',
                 ],
                 'extractors' => [
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],

@@ -9,7 +9,8 @@ use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\CookieExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\HeaderExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\QueryExtractor;
-use Damax\Bundle\ApiAuthBundle\Jwt\LcobucciProvider;
+use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
+use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\JwtAuthenticator;
@@ -117,11 +118,14 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
                     'signing_key' => $key,
                     'verification_key' => $key,
                 ],
-                'builder' => [
-                    'audience' => 'symfony',
-                ],
                 'parser' => [
                     'issuers' => ['damax', 'damax-api-auth-bundle'],
+                    'audience' => 'symfony',
+                ],
+                'builder' => [
+                    'issuer' => 'damax',
+                    'audience' => 'zend',
+                    'ttl' => 600,
                 ],
             ],
         ]);
@@ -149,7 +153,7 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
             ->getDefinition('damax.api_auth.jwt.authenticator')
             ->getArgument(1)
         ;
-        $this->assertEquals(LcobucciProvider::class, $parser->getClass());
+        $this->assertEquals(Parser::class, $parser->getClass());
         $this->assertEquals(['damax', 'damax-api-auth-bundle'], $parser->getArgument(2));
         $this->assertEquals('symfony', $parser->getArgument(3));
 
@@ -161,6 +165,18 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         /** @var Definition $signer */
         $signer = $config->getArgument(0);
         $this->assertEquals(Sha256::class, $signer->getClass());
+
+        $this->assertContainerBuilderHasService('damax.api_auth.jwt.handler');
+
+        /** @var Definition $builder */
+        $builder = $this->container
+            ->getDefinition('damax.api_auth.jwt.handler')
+            ->getArgument(0)
+        ;
+        $this->assertEquals(Builder::class, $builder->getClass());
+        $this->assertEquals(600, $builder->getArgument(2));
+        $this->assertEquals('damax', $builder->getArgument(3));
+        $this->assertEquals('zend', $builder->getArgument(4));
 
         unlink($key);
     }

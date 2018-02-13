@@ -2,15 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Damax\Bundle\ApiAuthBundle\Jwt;
+namespace Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci;
 
+use Damax\Bundle\ApiAuthBundle\Jwt\Token;
+use Damax\Bundle\ApiAuthBundle\Jwt\TokenParser;
 use Lcobucci\Clock\Clock;
-use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Configuration as JwtConfiguration;
 use Lcobucci\JWT\Token as JwtToken;
 use Lcobucci\JWT\Validation\Constraint;
 
-class LcobucciProvider implements TokenParser
+class Parser implements TokenParser
 {
+    /**
+     * @var JwtConfiguration
+     */
     private $config;
 
     /**
@@ -18,7 +23,7 @@ class LcobucciProvider implements TokenParser
      */
     private $constraints;
 
-    public function __construct(Configuration $config, Clock $clock, array $issuers = null, string $audience = null)
+    public function __construct(JwtConfiguration $config, Clock $clock, array $issuers = null, string $audience = null)
     {
         $this->config = $config;
 
@@ -30,6 +35,7 @@ class LcobucciProvider implements TokenParser
         if ($issuers) {
             $this->addConstraint(new Constraint\IssuedBy(...$issuers));
         }
+
         if ($audience) {
             $this->addConstraint(new Constraint\PermittedFor($audience));
         }
