@@ -49,7 +49,7 @@ class BuilderTest extends TestCase
             'exp' => new DateTimeImmutable('2018-02-09 07:10:00'),
             'iat' => new DateTimeImmutable('2018-02-09 06:10:00'),
             'nbf' => new DateTimeImmutable('2018-02-09 06:10:00'),
-            'roles' => ['ROLE_USER', 'ROLE_ADMIN'],
+            'roles' => ['user', 'admin'],
         ], $jwtToken->claims()->all());
     }
 }

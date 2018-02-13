@@ -53,6 +53,8 @@ class Builder implements TokenBuilder
 
     private function roleToString($role): string
     {
-        return strval($role instanceof Role ? $role->getRole() : $role);
+        $str = strtolower(strval($role instanceof Role ? $role->getRole() : $role));
+
+        return 0 === strpos($str, 'role_') ? substr($str, 5) : $str;
     }
 }
