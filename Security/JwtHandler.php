@@ -9,9 +9,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
-class JwtHandler implements AuthenticationSuccessHandlerInterface
+class JwtHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
     private $builder;
 
@@ -25,5 +27,10 @@ class JwtHandler implements AuthenticationSuccessHandlerInterface
         $jwtString = $this->builder->fromUser($token->getUser());
 
         return JsonResponse::create(['token' => $jwtString]);
+    }
+
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
+    {
+        return JsonResponse::create(['message' => $exception->getMessage()], Response::HTTP_UNAUTHORIZED);
     }
 }

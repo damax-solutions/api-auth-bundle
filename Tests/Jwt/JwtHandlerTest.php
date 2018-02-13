@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\User;
 
 class JwtHandlerTest extends TestCase
@@ -33,7 +34,7 @@ class JwtHandlerTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_response_with_token()
+    public function it_handles_successful_request()
     {
         $user = new User('john.doe@domain.abc', 'qwerty');
 
@@ -47,5 +48,16 @@ class JwtHandlerTest extends TestCase
         $response = $this->handler->onAuthenticationSuccess(new Request(), new UsernamePasswordToken($user, 'qwerty', 'main'));
 
         $this->assertEquals(json_encode(['token' => 'XYZ']), $response->getContent());
+    }
+
+    /**
+     * @test
+     */
+    public function it_handles_failure_request()
+    {
+        $response = $this->handler->onAuthenticationFailure(new Request(), new AuthenticationException('Invalid username.'));
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals(json_encode(['message' => 'Invalid username.']), $response->getContent());
     }
 }
