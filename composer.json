@@ -1,13 +1,12 @@
 {
   "name": "damax/api-auth-bundle",
   "type": "symfony-bundle",
-  "description": "Authentication with api key or JWT.",
+  "description": "Authentication via api key or JWT.",
+  "license": "MIT",
   "require": {
     "php": "^7.1",
     "lcobucci/jwt": "4.*@dev",
-    "symfony/config": "^4.0",
-    "symfony/dependency-injection": "^4.0",
-    "symfony/security": "^4.0"
+    "symfony/security-bundle": "^3.4|^4.0"
   },
   "config": {
     "sort-packages": true
