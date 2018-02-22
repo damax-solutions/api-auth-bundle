@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Jwt;
 
-use Lcobucci\JWT\Token\RegisteredClaims;
-
-final class Token implements RegisteredClaims
+final class Token
 {
     private $data;
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\DependencyInjection;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
@@ -56,6 +57,8 @@ class DamaxApiAuthExtension extends ConfigurableExtension
 
     private function configureJwt(array $config, ContainerBuilder $container): self
     {
+        $container->registerForAutoconfiguration(Claims::class)->addTag('damax.api_auth.claims');
+
         $signer = $this->configureJwtSigner($config['signer']);
 
         $clock = new Definition(SystemClock::class);

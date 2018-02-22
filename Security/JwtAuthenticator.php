@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Security;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
-use Damax\Bundle\ApiAuthBundle\Jwt\Token;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenParser;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,7 +33,7 @@ class JwtAuthenticator extends Authenticator
     {
         $jwtToken = $this->tokenParser->parse($credentials);
 
-        if (null === $username = $jwtToken->get($this->identityClaim ?? Token::SUBJECT)) {
+        if (null === $username = $jwtToken->get($this->identityClaim ?? Claims::SUBJECT)) {
             throw new AuthenticationException('Username could not be identified.');
         }
 
