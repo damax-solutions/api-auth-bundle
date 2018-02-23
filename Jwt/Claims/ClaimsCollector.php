@@ -11,7 +11,7 @@ class ClaimsCollector implements Claims
 {
     private $items = [];
 
-    public function __construct(array $items = [])
+    public function __construct(iterable $items = [])
     {
         foreach ($items as $item) {
             $this->add($item);
