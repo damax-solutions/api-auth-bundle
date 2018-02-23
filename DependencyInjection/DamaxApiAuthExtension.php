@@ -6,6 +6,10 @@ namespace Damax\Bundle\ApiAuthBundle\DependencyInjection;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims\ClaimsCollector;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims\OrganizationClaims;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims\SecurityClaims;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
@@ -17,6 +21,7 @@ use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfiguration;
 use Lcobucci\JWT\Signer\Key;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -47,18 +52,22 @@ class DamaxApiAuthExtension extends ConfigurableExtension
         $extractors = $this->configureExtractors($config['extractors']);
 
         // User provider.
-        $container->setDefinition('damax.api_auth.api_key.user_provider', new Definition(UserProvider::class, [$config['tokens']]));
+        $container
+            ->register('damax.api_auth.api_key.user_provider', UserProvider::class)
+            ->addArgument($config['tokens'])
+        ;
 
         // Authenticator.
-        $container->setDefinition('damax.api_auth.api_key.authenticator', new Definition(ApiKeyAuthenticator::class, [$extractors]));
+        $container
+            ->register('damax.api_auth.api_key.authenticator', ApiKeyAuthenticator::class)
+            ->addArgument($extractors)
+        ;
 
         return $this;
     }
 
     private function configureJwt(array $config, ContainerBuilder $container): self
     {
-        $container->registerForAutoconfiguration(Claims::class)->addTag('damax.api_auth.claims');
-
         $signer = $this->configureJwtSigner($config['signer']);
 
         $clock = new Definition(SystemClock::class);
@@ -88,27 +97,28 @@ class DamaxApiAuthExtension extends ConfigurableExtension
             ->addArgument($config['parser']['audience'] ?? null)
         ;
 
+        $claims = $this->configureJwtClaims($config['builder'], $clock, $container);
+
         $builder = (new Definition(Builder::class))
             ->addArgument($configuration)
-            ->addArgument($clock)
-            ->addArgument($config['builder']['ttl'])
-            ->addArgument($config['builder']['issuer'] ?? null)
-            ->addArgument($config['builder']['audience'] ?? null)
+            ->addArgument($claims)
         ;
 
         $extractors = $this->configureExtractors($config['extractors']);
 
         // Authenticator.
-        $container->setDefinition('damax.api_auth.jwt.authenticator', new Definition(JwtAuthenticator::class, [
-            $extractors,
-            $parser,
-            $config['identity_claim'] ?? null,
-        ]));
+        $container
+            ->register('damax.api_auth.jwt.authenticator', JwtAuthenticator::class)
+            ->addArgument($extractors)
+            ->addArgument($parser)
+            ->addArgument($config['identity_claim'] ?? null)
+        ;
 
         // Handler.
-        $container->setDefinition('damax.api_auth.jwt.handler', new Definition(JwtHandler::class, [
-            $builder,
-        ]));
+        $container
+            ->register('damax.api_auth.jwt.handler', JwtHandler::class)
+            ->addArgument($builder)
+        ;
 
         return $this;
     }
@@ -121,6 +131,34 @@ class DamaxApiAuthExtension extends ConfigurableExtension
         ;
 
         return $this;
+    }
+
+    private function configureJwtClaims(array $config, Definition $clock, ContainerBuilder $container): Definition
+    {
+        // Default claims.
+        $container
+            ->register(TimestampClaims::class)
+            ->addArgument($clock)
+            ->addArgument($config['ttl'])
+            ->addTag('damax.api_auth.jwt_claims')
+        ;
+        $container
+            ->register(OrganizationClaims::class)
+            ->addArgument($config['issuer'] ?? null)
+            ->addArgument($config['audience'] ?? null)
+            ->addTag('damax.api_auth.jwt_claims')
+        ;
+        $container
+            ->register(SecurityClaims::class)
+            ->addTag('damax.api_auth.jwt_claims')
+        ;
+
+        $container->setAlias(Claims::class, ClaimsCollector::class);
+
+        return $container
+            ->register(ClaimsCollector::class)
+            ->addArgument(new TaggedIteratorArgument('damax.api_auth.jwt_claims'))
+        ;
     }
 
     private function configureJwtSigner(array $config): Definition

@@ -9,6 +9,9 @@ use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\CookieExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\HeaderExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\QueryExtractor;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims\OrganizationClaims;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims\SecurityClaims;
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
@@ -174,9 +177,17 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
             ->getArgument(0)
         ;
         $this->assertEquals(Builder::class, $builder->getClass());
-        $this->assertEquals(600, $builder->getArgument(2));
-        $this->assertEquals('damax', $builder->getArgument(3));
-        $this->assertEquals('zend', $builder->getArgument(4));
+        $this->assertSame($config, $builder->getArgument(0));
+
+        // Claims
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TimestampClaims::class, 0);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TimestampClaims::class, 1, 600);
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(TimestampClaims::class, 'damax.api_auth.jwt_claims');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(OrganizationClaims::class, 0, 'damax');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(OrganizationClaims::class, 1, 'zend');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(OrganizationClaims::class, 'damax.api_auth.jwt_claims');
+        $this->assertContainerBuilderHasService(SecurityClaims::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(SecurityClaims::class, 'damax.api_auth.jwt_claims');
 
         unlink($key);
     }
