@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Damax\Bundle\ApiAuthBundle\Security;
+namespace Damax\Bundle\ApiAuthBundle\Security\Jwt;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenParser;
+use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class JwtAuthenticator extends Authenticator
+class Authenticator extends AbstractAuthenticator
 {
     private $tokenParser;
     private $identityClaim;

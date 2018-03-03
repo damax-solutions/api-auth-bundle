@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Damax\Bundle\ApiAuthBundle\Security;
+namespace Damax\Bundle\ApiAuthBundle\Security\ApiKey;
 
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-class ApiKeyNotFoundException extends AuthenticationException
+class InvalidApiKeyException extends AuthenticationException
 {
     public function getMessageKey(): string
     {
-        return 'Api key could not be found.';
+        return 'Invalid api key.';
     }
 }

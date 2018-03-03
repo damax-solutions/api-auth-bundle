@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Damax\Bundle\ApiAuthBundle\Security;
+namespace Damax\Bundle\ApiAuthBundle\Security\Jwt;
 
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
-class JwtHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
+class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
     private $builder;
 

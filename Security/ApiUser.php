@@ -6,7 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Security;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
-final class User implements UserInterface
+final class ApiUser implements UserInterface
 {
     private const DEFAULT_ROLES = ['ROLE_API'];
 

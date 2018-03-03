@@ -16,7 +16,7 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 /**
  * @see https://symfony.com/doc/current/_images/authentication-guard-methods.png
  */
-abstract class Authenticator extends AbstractGuardAuthenticator
+abstract class AbstractAuthenticator extends AbstractGuardAuthenticator
 {
     private $extractor;
 

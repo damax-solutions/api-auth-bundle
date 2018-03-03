@@ -13,10 +13,10 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
-use Damax\Bundle\ApiAuthBundle\Security\ApiKeyAuthenticator;
-use Damax\Bundle\ApiAuthBundle\Security\JwtAuthenticator;
-use Damax\Bundle\ApiAuthBundle\Security\JwtHandler;
-use Damax\Bundle\ApiAuthBundle\Security\UserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\Jwt\AuthenticationHandler;
+use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfiguration;
 use Lcobucci\JWT\Signer\Key;
@@ -53,7 +53,7 @@ class DamaxApiAuthExtension extends ConfigurableExtension
 
         // User provider.
         $container
-            ->register('damax.api_auth.api_key.user_provider', UserProvider::class)
+            ->register('damax.api_auth.api_key.user_provider', TokenUserProvider::class)
             ->addArgument($config['tokens'])
         ;
 
@@ -116,7 +116,7 @@ class DamaxApiAuthExtension extends ConfigurableExtension
 
         // Handler.
         $container
-            ->register('damax.api_auth.jwt.handler', JwtHandler::class)
+            ->register('damax.api_auth.jwt.handler', AuthenticationHandler::class)
             ->addArgument($builder)
         ;
 

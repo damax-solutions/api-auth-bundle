@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Damax\Bundle\ApiAuthBundle\Tests\Security;
+namespace Damax\Bundle\ApiAuthBundle\Tests\Security\ApiKey;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
-use Damax\Bundle\ApiAuthBundle\Security\ApiKeyAuthenticator;
-use Damax\Bundle\ApiAuthBundle\Security\Authenticator;
-use Damax\Bundle\ApiAuthBundle\Security\UserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class ApiKeyAuthenticatorTest extends TestCase
+class AuthenticatorTest extends TestCase
 {
     /**
-     * @var Authenticator
+     * @var AbstractAuthenticator
      */
     private $authenticator;
 
@@ -25,7 +25,7 @@ class ApiKeyAuthenticatorTest extends TestCase
         /** @var Extractor $extractor */
         $extractor = $this->createMock(Extractor::class);
 
-        $this->authenticator = new ApiKeyAuthenticator($extractor);
+        $this->authenticator = new Authenticator($extractor);
     }
 
     /**
@@ -33,7 +33,7 @@ class ApiKeyAuthenticatorTest extends TestCase
      */
     public function it_retrieves_user_by_api_key()
     {
-        $user = $this->authenticator->getUser('ABC', new UserProvider(['user' => 'ABC']));
+        $user = $this->authenticator->getUser('ABC', new TokenUserProvider(['user' => 'ABC']));
 
         $this->assertEquals('user', $user->getUsername());
     }

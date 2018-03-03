@@ -15,9 +15,9 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
-use Damax\Bundle\ApiAuthBundle\Security\ApiKeyAuthenticator;
-use Damax\Bundle\ApiAuthBundle\Security\JwtAuthenticator;
-use Damax\Bundle\ApiAuthBundle\Security\UserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
@@ -45,7 +45,7 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
             ],
         ]);
 
-        $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', UserProvider::class);
+        $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', TokenUserProvider::class);
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('damax.api_auth.api_key.user_provider', 0, [
             'foo' => 'bar',
             'baz' => 'qux',

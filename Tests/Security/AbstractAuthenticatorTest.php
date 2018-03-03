@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Tests\Security;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
-use Damax\Bundle\ApiAuthBundle\Security\Authenticator;
+use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class AuthenticatorTest extends TestCase
+class AbstractAuthenticatorTest extends TestCase
 {
     /**
      * @var Request
@@ -28,7 +28,7 @@ class AuthenticatorTest extends TestCase
     private $extractor;
 
     /**
-     * @var Authenticator
+     * @var AbstractAuthenticator
      */
     private $authenticator;
 
@@ -36,7 +36,7 @@ class AuthenticatorTest extends TestCase
     {
         $this->request = new Request();
         $this->extractor = $extractor = $this->createMock(Extractor::class);
-        $this->authenticator = new class($extractor) extends Authenticator {
+        $this->authenticator = new class($extractor) extends AbstractAuthenticator {
             public function getUser($credentials, UserProviderInterface $userProvider)
             {
             }

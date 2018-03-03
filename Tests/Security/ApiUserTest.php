@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Tests\Security;
 
-use Damax\Bundle\ApiAuthBundle\Security\User;
+use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
 use PHPUnit\Framework\TestCase;
 
-class UserTest extends TestCase
+class ApiUserTest extends TestCase
 {
     /**
      * @test
      */
     public function it_retrieves_user_values()
     {
-        $user = new User('foo');
+        $user = new ApiUser('foo');
 
         $this->assertEquals('foo', $user->getUsername());
         $this->assertEquals(['ROLE_API'], $user->getRoles());

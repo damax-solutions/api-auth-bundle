@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Damax\Bundle\ApiAuthBundle\Security;
+namespace Damax\Bundle\ApiAuthBundle\Security\ApiKey;
 
+use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class UserProvider implements ApiKeyUserProvider
+class TokenUserProvider implements ApiKeyUserProvider
 {
     private $tokens;
 
@@ -18,18 +19,18 @@ class UserProvider implements ApiKeyUserProvider
 
     public function supportsClass($class): bool
     {
-        return User::class === $class;
+        return ApiUser::class === $class;
     }
 
     public function loadUserByUsername($username): UserInterface
     {
-        return new User($username);
+        return new ApiUser($username);
     }
 
     public function loadUserByApiKey(string $key): UserInterface
     {
         if (false === $username = array_search($key, $this->tokens)) {
-            throw new ApiKeyNotFoundException();
+            throw new InvalidApiKeyException();
         }
 
         return $this->loadUserByUsername($username);
