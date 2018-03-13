@@ -23,10 +23,10 @@ matrix:
 
 before_install:
     - composer self-update
+    - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/security-bundle:$SYMFONY_VERSION; fi
 
 install:
     - composer install --prefer-dist
-    - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/security-bundle:$SYMFONY_VERSION; fi
 
 script:
     - vendor/bin/simple-phpunit --coverage-clover=build/logs/clover.xml
