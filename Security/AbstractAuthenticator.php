@@ -37,7 +37,7 @@ abstract class AbstractAuthenticator extends AbstractGuardAuthenticator
 
     public function getCredentials(Request $request): string
     {
-        return $this->extractor->extractKey($request);
+        return (string) $this->extractor->extractKey($request);
     }
 
     public function checkCredentials($credentials, UserInterface $user): bool
