@@ -20,9 +20,6 @@ matrix:
         - php: 7.1
           env: SYMFONY_LOWEST="--prefer-lowest"
 
-before_install:
-    - composer self-update
-
 install:
     - composer install --prefer-dist
     - if [ "SYMFONY_LOWEST" != "" ]; then composer update symfony/security-bundle $SYMFONY_LOWEST --with-dependencies; fi
