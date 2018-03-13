@@ -6,11 +6,22 @@ php:
     - 7.1
     - 7.2
 
+env:
+    global:
+        - SYMFONY_PHPUNIT_VERSION=6.5
+        - SYMFONY_VERSION=""
+
+matrix:
+    include:
+        - php: 7.1
+          env: SYMFONY_VERSION=3.4.*
+
 before_install:
     - composer self-update
 
 install:
     - composer install --prefer-dist
+    - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/security-bundle:$SYMFONY_VERSION fi
 
 script:
     - vendor/bin/simple-phpunit --coverage-clover=build/logs/clover.xml
