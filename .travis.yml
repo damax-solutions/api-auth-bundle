@@ -9,7 +9,12 @@ php:
 env:
     global:
         - SYMFONY_PHPUNIT_VERSION=6.5
-        - SYMFONY_VERSION=""
+        - SYMFONY_VERSION=
+
+cache:
+    directories:
+        - $HOME/.composer/cache
+        - vendor
 
 matrix:
     include:
@@ -21,7 +26,7 @@ before_install:
 
 install:
     - composer install --prefer-dist
-    - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/security-bundle:$SYMFONY_VERSION fi
+    - if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/security-bundle:$SYMFONY_VERSION; fi
 
 script:
     - vendor/bin/simple-phpunit --coverage-clover=build/logs/clover.xml
