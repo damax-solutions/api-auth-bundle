@@ -20,6 +20,7 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
 
+        /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->root('damax_api_auth');
         $rootNode
             ->addDefaultsIfNotSet()
@@ -71,9 +72,6 @@ class Configuration implements ConfigurationInterface
         return (new ArrayNodeDefinition($name))
             ->canBeEnabled()
             ->children()
-                ->scalarNode('identity_claim')
-                    ->cannotBeEmpty()
-                ->end()
                 ->append($this->extractorsNode('extractors', [
                     [
                         'type' => 'header',
@@ -81,6 +79,9 @@ class Configuration implements ConfigurationInterface
                         'prefix' => 'Bearer',
                     ],
                 ]))
+                ->scalarNode('identity_claim')
+                    ->cannotBeEmpty()
+                ->end()
                 ->arrayNode('builder')
                     ->addDefaultsIfNotSet()
                     ->children()
