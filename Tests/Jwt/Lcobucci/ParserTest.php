@@ -13,8 +13,8 @@ use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint;
 use Lcobucci\JWT\Validator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 class ParserTest extends TestCase
 {
@@ -24,12 +24,12 @@ class ParserTest extends TestCase
     private $signer;
 
     /**
-     * @var JwtParser|PHPUnit_Framework_MockObject_MockObject
+     * @var JwtParser|MockObject
      */
     private $jwtParser;
 
     /**
-     * @var Validator|PHPUnit_Framework_MockObject_MockObject
+     * @var Validator|MockObject
      */
     private $validator;
 

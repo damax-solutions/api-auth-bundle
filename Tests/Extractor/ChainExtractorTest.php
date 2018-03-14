@@ -6,19 +6,19 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Extractor;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 
 class ChainExtractorTest extends TestCase
 {
     /**
-     * @var Extractor|PHPUnit_Framework_MockObject_MockObject
+     * @var Extractor|MockObject
      */
     private $extractor1;
 
     /**
-     * @var Extractor|PHPUnit_Framework_MockObject_MockObject
+     * @var Extractor|MockObject
      */
     private $extractor2;
 

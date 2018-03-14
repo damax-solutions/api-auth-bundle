@@ -25,6 +25,6 @@ $ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle ./vendor/bin/php-
 Running tests:
 
 ```bash
-$ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle ./vendor/bin/simple-phpunit
-$ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle ./bin/phpunit-coverage
+$ docker run --rm -v $(pwd):/app -w /app -e SYMFONY_PHPUNIT_VERSION=6.5 damax-api-auth-bundle ./vendor/bin/simple-phpunit
+$ docker run --rm -v $(pwd):/app -w /app -e SYMFONY_PHPUNIT_VERSION=6.5 damax-api-auth-bundle ./bin/phpunit-coverage
 ```

@@ -6,8 +6,8 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Listener;
 
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 class ExceptionListenerTest extends TestCase
 {
     /**
-     * @var LoggerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var LoggerInterface|MockObject
      */
     private $logger;
 

@@ -6,8 +6,8 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Security;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -23,7 +23,7 @@ class AbstractAuthenticatorTest extends TestCase
     private $request;
 
     /**
-     * @var Extractor|PHPUnit_Framework_MockObject_MockObject
+     * @var Extractor|MockObject
      */
     private $extractor;
 

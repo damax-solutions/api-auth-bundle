@@ -6,8 +6,8 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Security\Jwt;
 
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\AuthenticationHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\User\User;
 class AuthenticationHandlerTest extends TestCase
 {
     /**
-     * @var Builder|PHPUnit_Framework_MockObject_MockObject
+     * @var Builder|MockObject
      */
     private $builder;
 

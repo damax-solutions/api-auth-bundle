@@ -8,8 +8,8 @@ use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Jwt\Token;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenParser;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -17,12 +17,12 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class AuthenticatorTest extends TestCase
 {
     /**
-     * @var Extractor|PHPUnit_Framework_MockObject_MockObject
+     * @var Extractor|MockObject
      */
     private $extractor;
 
     /**
-     * @var TokenParser|PHPUnit_Framework_MockObject_MockObject
+     * @var TokenParser|MockObject
      */
     private $tokenParser;
 
@@ -71,7 +71,7 @@ class AuthenticatorTest extends TestCase
         /** @var UserInterface $user */
         $user = $this->createMock(UserInterface::class);
 
-        /** @var UserProviderInterface|PHPUnit_Framework_MockObject_MockObject $userProvider */
+        /** @var UserProviderInterface|MockObject $userProvider */
         $userProvider = $this->createMock(UserProviderInterface::class);
         $userProvider
             ->expects($this->once())
@@ -98,7 +98,7 @@ class AuthenticatorTest extends TestCase
         /** @var UserInterface $user */
         $user = $this->createMock(UserInterface::class);
 
-        /** @var UserProviderInterface|PHPUnit_Framework_MockObject_MockObject $userProvider */
+        /** @var UserProviderInterface|MockObject $userProvider */
         $userProvider = $this->createMock(UserProviderInterface::class);
         $userProvider
             ->expects($this->once())
@@ -122,7 +122,7 @@ class AuthenticatorTest extends TestCase
             ->willReturn(Token::fromClaims([]))
         ;
 
-        /** @var UserProviderInterface|PHPUnit_Framework_MockObject_MockObject $userProvider */
+        /** @var UserProviderInterface|MockObject $userProvider */
         $userProvider = $this->createMock(UserProviderInterface::class);
         $userProvider
             ->expects($this->never())
