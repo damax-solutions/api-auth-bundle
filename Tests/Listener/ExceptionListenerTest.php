@@ -94,6 +94,7 @@ class ExceptionListenerTest extends TestCase
     public function provideExceptionData(): array
     {
         return [
+            [new BadRequestHttpException('Invalid request'), 'Invalid request', Response::HTTP_BAD_REQUEST, 'error', __LINE__],
             [new BadRequestHttpException(), 'Bad Request', Response::HTTP_BAD_REQUEST, 'error', __LINE__],
             [new MethodNotAllowedHttpException(['GET', 'POST']), 'Method Not Allowed', Response::HTTP_METHOD_NOT_ALLOWED, 'error', __LINE__],
             [new NotFoundHttpException(), 'Not Found', Response::HTTP_NOT_FOUND, 'error', __LINE__],

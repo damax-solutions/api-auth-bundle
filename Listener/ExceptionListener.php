@@ -32,13 +32,15 @@ class ExceptionListener
 
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
-            $message = Response::$statusTexts[$statusCode] ?? 'Unknown status';
+            $message = $exception->getMessage() ?: Response::$statusTexts[$statusCode] ?? 'Unknown status';
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             $message = $exception->getMessage();
         }
 
-        $event->setResponse(JsonResponse::create(['message' => $message], $statusCode));
+        $response = JsonResponse::create(['message' => $message], $statusCode)->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+
+        $event->setResponse($response);
     }
 
     protected function logException(Exception $exception)
