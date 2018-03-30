@@ -112,6 +112,12 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('signer')
                     ->isRequired()
                     ->beforeNormalization()
+                        ->ifString()
+                        ->then(function (string $config): array {
+                            return ['signing_key' => $config];
+                        })
+                    ->end()
+                    ->beforeNormalization()
                         ->ifTrue(function (?array $config): bool {
                             $type = $config['type'] ?? self::SIGNER_SYMMETRIC;
 

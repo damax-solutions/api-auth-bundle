@@ -290,6 +290,36 @@ class ConfigurationTest extends TestCase
         unlink($filename);
     }
 
+    /**
+     * @test
+     */
+    public function it_processes_minimal_jwt_config()
+    {
+        $config = [
+            'jwt' => [
+                'signer' => 'secret',
+            ],
+        ];
+
+        $this->assertProcessedConfigurationEquals([$config], [
+            'jwt' => [
+                'enabled' => true,
+                'builder' => [
+                    'ttl' => 3600,
+                ],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
+                ],
+                'signer' => [
+                    'type' => 'symmetric',
+                    'algorithm' => 'HS256',
+                    'signing_key' => 'secret',
+                    'passphrase' => '',
+                ],
+            ],
+        ], 'jwt');
+    }
+
     protected function getConfiguration(): ConfigurationInterface
     {
         return new Configuration();
