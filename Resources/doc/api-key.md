@@ -11,7 +11,7 @@ damax_api_auth:
         app_two: '%env(API_TOKEN_APP_TWO)%'
 ```
 
-Above configuration registers `damax.api_auth.api_key.user_provider` security provider you need to include in `security.yml`:
+Above configuration registers `damax.api_auth.api_key.user_provider` service you need to include in `security.yml`:
 
 ```yaml
 security:
@@ -89,17 +89,11 @@ damax_api_auth:
             app_one: '%env(API_TOKEN_APP_ONE)%'
             app_two: '%env(API_TOKEN_APP_TWO)%'
         extractors:
-            - type: query
-              name: api_key
-            - type: query
-              name: apikey
-            - type: cookie
-              name: api_key
-            - type: header
-              name: 'X-Auth-Token'
-            - type: header:
-              name: 'X-Auth'
-              prefix: Token
+            - { type: query, name: api_key }
+            - { type: query, name: apikey }
+            - { type: cookie, name: api_key }
+            - { type: header, name: 'X-Auth-Token' }
+            - { type: header, name: 'X-Auth', prefix: Token }
 ```
 
 All the following `cURL` requests are accepted for authentication:
@@ -107,7 +101,7 @@ All the following `cURL` requests are accepted for authentication:
 ```bash
 $ curl https://domain.abc/api/run?api_key=secret
 $ curl https://domain.abc/api/run?apikey=secret
-$ curl --cookie "api_key=secret" https://domain.abc/api/run?apikey=secret
-$ curl -H "X-Auth-Token: secret" https://domain.abc/api/run?apikey=secret
-$ curl -H "X-Auth: Token secret" https://domain.abc/api/run?apikey=secret
+$ curl --cookie "api_key=secret" https://domain.abc/api/run
+$ curl -H "X-Auth-Token: secret" https://domain.abc/api/run
+$ curl -H "X-Auth: Token secret" https://domain.abc/api/run
 ```
