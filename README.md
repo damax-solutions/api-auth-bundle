@@ -9,4 +9,5 @@ Api key and/or [JWT](https://jwt.io/) authentication for Symfony application.
 Topics:
 
 - [Installation](Resources/doc/installation.md)
+- [Api key usage](Resources/doc/api-key.md)
 - [Development](Resources/doc/development.md)
