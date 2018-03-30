@@ -10,4 +10,5 @@ Topics:
 
 - [Installation](Resources/doc/installation.md)
 - [Api key usage](Resources/doc/api-key.md)
+- [JWT usage](Resources/doc/jwt.md)
 - [Development](Resources/doc/development.md)
