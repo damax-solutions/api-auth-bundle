@@ -296,9 +296,7 @@ class ConfigurationTest extends TestCase
     public function it_processes_minimal_jwt_config()
     {
         $config = [
-            'jwt' => [
-                'signer' => 'secret',
-            ],
+            'jwt' => 'secret',
         ];
 
         $this->assertProcessedConfigurationEquals([$config], [

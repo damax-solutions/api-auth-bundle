@@ -70,6 +70,12 @@ class Configuration implements ConfigurationInterface
     private function jwtNode(string $name): ArrayNodeDefinition
     {
         return (new ArrayNodeDefinition($name))
+            ->beforeNormalization()
+                ->ifString()
+                ->then(function (string $config): array {
+                    return ['signer' => $config];
+                })
+            ->end()
             ->canBeEnabled()
             ->children()
                 ->append($this->extractorsNode('extractors', [
