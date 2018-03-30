@@ -126,6 +126,10 @@ class Configuration implements ConfigurationInterface
                                 $config['verification_key'] = 'file://' . $config['verification_key'];
                             }
 
+                            if (!isset($config['algorithm'])) {
+                                $config['algorithm'] = self::ASYMMETRIC_ALGOS[0];
+                            }
+
                             return $config;
                         })
                     ->end()
@@ -156,6 +160,18 @@ class Configuration implements ConfigurationInterface
                             return !is_readable($config['signing_key']) || !is_readable($config['verification_key']);
                         })
                         ->thenInvalid('Signing and/or verification key is not readable.')
+                    ->end()
+                    ->validate()
+                        ->ifTrue(function (array $config): bool {
+                            return self::SIGNER_SYMMETRIC === $config['type'] && !empty($config['verification_key']);
+                        })
+                        ->thenInvalid('Verification key must no be specified for "symmetric" signer.')
+                    ->end()
+                    ->validate()
+                        ->ifTrue(function (array $config): bool {
+                            return self::SIGNER_SYMMETRIC === $config['type'] && !empty($config['passphrase']);
+                        })
+                        ->thenInvalid('Passphrase must not be specified for "symmetric" signer.')
                     ->end()
                     ->children()
                         ->enumNode('type')

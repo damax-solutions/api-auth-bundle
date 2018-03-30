@@ -220,6 +220,40 @@ class ConfigurationTest extends TestCase
     /**
      * @test
      */
+    public function it_requires_no_verification_key_for_symmetric_signer()
+    {
+        $config = [
+            'jwt' => [
+                'signer' => [
+                    'signing_key' => 'signing_secret',
+                    'verification_key' => 'verification_secret',
+                ],
+            ],
+        ];
+
+        $this->assertPartialConfigurationIsInvalid([$config], 'jwt', 'Verification key must no be specified for "symmetric" signer.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_no_passphrase_for_symmetric_signer()
+    {
+        $config = [
+            'jwt' => [
+                'signer' => [
+                    'signing_key' => 'signing_secret',
+                    'passphrase' => '__XYZ__',
+                ],
+            ],
+        ];
+
+        $this->assertPartialConfigurationIsInvalid([$config], 'jwt', 'Passphrase must not be specified for "symmetric" signer.');
+    }
+
+    /**
+     * @test
+     */
     public function it_processes_jwt_config()
     {
         $filename = tempnam(sys_get_temp_dir(), 'key_');
@@ -228,7 +262,6 @@ class ConfigurationTest extends TestCase
             'jwt' => [
                 'signer' => [
                     'type' => 'asymmetric',
-                    'algorithm' => 'RS256',
                     'signing_key' => $filename,
                     'verification_key' => $filename,
                 ],
