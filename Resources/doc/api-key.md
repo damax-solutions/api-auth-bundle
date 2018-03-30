@@ -108,7 +108,7 @@ $ curl -H "X-Auth: Token secret" https://domain.abc/api/run
 
 #### Custom user provider
 
-Implement `Damax\Bundle\ApiAuthBundle\Security\ApiKeyApiKeyUserProvider` interface in your security user provider, e.g.
+Implement `Damax\Bundle\ApiAuthBundle\Security\ApiKeyApiKeyUserProvider` interface in your user provider, e.g.
 
 ```php
 <?php
