@@ -11,7 +11,7 @@ damax_api_auth:
         app_two: '%env(API_TOKEN_APP_TWO)%'
 ```
 
-Above configuration registers `damax.api_auth.api_key.user_provider` service you need to include in `security.yml`:
+Above configuration registers `damax.api_auth.api_key.user_provider` and `damax.api_auth.api_key.authenticator` services you need to include in `security.yml`:
 
 ```yaml
 security:
