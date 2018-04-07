@@ -20,20 +20,15 @@ use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfiguration;
 use Lcobucci\JWT\Signer\Key;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 class DamaxApiAuthExtension extends ConfigurableExtension
 {
     protected function loadInternal(array $config, ContainerBuilder $container)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.xml');
-
         if ($config['api_key']['enabled']) {
             $this->configureApiKey($config['api_key'], $container);
         }
@@ -126,7 +121,8 @@ class DamaxApiAuthExtension extends ConfigurableExtension
     private function configureExceptions(ContainerBuilder $container): self
     {
         $container
-            ->getDefinition(ExceptionListener::class)
+            ->register(ExceptionListener::class)
+            ->setAutowired(true)
             ->addTag('kernel.event_listener', ['event' => 'kernel.exception', 'method' => 'onKernelException'])
         ;
 

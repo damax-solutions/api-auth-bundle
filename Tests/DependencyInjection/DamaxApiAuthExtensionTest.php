@@ -102,7 +102,7 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
     {
         $this->load(['format_exceptions' => false]);
 
-        $this->assertEmpty($this->container->getDefinition(ExceptionListener::class)->getTags());
+        $this->assertContainerBuilderNotHasService(ExceptionListener::class);
     }
 
     /**
