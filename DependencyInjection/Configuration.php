@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->append($this->apiKeyNode('api_key'))
                 ->append($this->jwtNode('jwt'))
-                ->booleanNode('format_exceptions')->defaultTrue()->end()
+                ->append($this->exceptionsNode('format_exceptions'))
             ->end()
         ;
 
@@ -205,6 +205,24 @@ class Configuration implements ConfigurationInterface
                             ->defaultValue('')
                         ->end()
                     ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    private function exceptionsNode(string $name): ArrayNodeDefinition
+    {
+        return (new ArrayNodeDefinition($name))
+            ->canBeEnabled()
+            ->beforeNormalization()
+                ->ifString()
+                ->then(function (string $config): array {
+                    return ['enabled' => true, 'base_url' => $config];
+                })
+            ->end()
+            ->children()
+                ->scalarNode('base_url')
+                    ->defaultValue('/')
                 ->end()
             ->end()
         ;

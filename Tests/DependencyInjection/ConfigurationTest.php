@@ -37,7 +37,10 @@ class ConfigurationTest extends TestCase
                     'ttl' => 3600,
                 ],
             ],
-            'format_exceptions' => true,
+            'format_exceptions' => [
+                'enabled' => false,
+                'base_url' => '/',
+            ],
         ]);
     }
 
@@ -316,6 +319,42 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ], 'jwt');
+    }
+
+    /**
+     * @test
+     */
+    public function it_processes_exceptions_config()
+    {
+        $config = [
+            'format_exceptions' => [
+                'base_url' => '/api',
+            ],
+        ];
+
+        $this->assertProcessedConfigurationEquals([$config], [
+            'format_exceptions' => [
+                'enabled' => true,
+                'base_url' => '/api',
+            ],
+        ], 'format_exceptions');
+    }
+
+    /**
+     * @test
+     */
+    public function it_processes_minimal_exceptions_config()
+    {
+        $config = [
+            'format_exceptions' => '/api',
+        ];
+
+        $this->assertProcessedConfigurationEquals([$config], [
+            'format_exceptions' => [
+                'enabled' => true,
+                'base_url' => '/api',
+            ],
+        ], 'format_exceptions');
     }
 
     protected function getConfiguration(): ConfigurationInterface

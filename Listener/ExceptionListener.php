@@ -7,6 +7,7 @@ namespace Damax\Bundle\ApiAuthBundle\Listener;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -14,15 +15,17 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 class ExceptionListener
 {
     private $logger;
+    private $requestMatcher;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, RequestMatcherInterface $requestMatcher)
     {
         $this->logger = $logger;
+        $this->requestMatcher = $requestMatcher;
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        if (!$event->isMasterRequest()) {
+        if (!$event->isMasterRequest() || !$this->requestMatcher->matches($event->getRequest())) {
             return;
         }
 

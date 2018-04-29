@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -28,6 +29,11 @@ class ExceptionListenerTest extends TestCase
     private $logger;
 
     /**
+     * @var RequestMatcherInterface|MockObject
+     */
+    private $requestMatcher;
+
+    /**
      * @var ExceptionListener
      */
     private $listener;
@@ -35,7 +41,8 @@ class ExceptionListenerTest extends TestCase
     protected function setUp()
     {
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->listener = new ExceptionListener($this->logger);
+        $this->requestMatcher = $this->createMock(RequestMatcherInterface::class);
+        $this->listener = new ExceptionListener($this->logger, $this->requestMatcher);
     }
 
     /**
@@ -60,6 +67,33 @@ class ExceptionListenerTest extends TestCase
 
     /**
      * @test
+     */
+    public function it_skips_non_matched_request()
+    {
+        $event = $this->createEvent();
+
+        $this->requestMatcher
+            ->expects($this->once())
+            ->method('matches')
+            ->with($this->identicalTo($event->getRequest()))
+            ->willReturn(false)
+        ;
+
+        $this->listener->onKernelException($event);
+
+        $this->assertNull($event->getResponse());
+        $this->logger
+            ->expects($this->never())
+            ->method('critical')
+        ;
+        $this->logger
+            ->expects($this->never())
+            ->method('error')
+        ;
+    }
+
+    /**
+     * @test
      *
      * @dataProvider provideExceptionData
      */
@@ -67,6 +101,13 @@ class ExceptionListenerTest extends TestCase
     {
         $event = $this->createEvent();
         $event->setException($exception);
+
+        $this->requestMatcher
+            ->expects($this->once())
+            ->method('matches')
+            ->with($this->identicalTo($event->getRequest()))
+            ->willReturn(true)
+        ;
 
         $error = sprintf('Uncaught PHP Exception %s: "%s" at %s line %s', get_class($exception), $exception->getMessage(), __FILE__, $line);
 

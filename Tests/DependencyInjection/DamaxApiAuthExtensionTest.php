@@ -15,6 +15,7 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
+use Damax\Bundle\ApiAuthBundle\Request\RequestMatcher;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
@@ -75,11 +76,6 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         // Cookie
         $this->assertEquals(CookieExtractor::class, $definitions[2]->getClass());
         $this->assertEquals('api_key', $definitions[2]->getArgument(0));
-
-        $this->assertContainerBuilderHasServiceDefinitionWithTag(ExceptionListener::class, 'kernel.event_listener', [
-            'event' => KernelEvents::EXCEPTION,
-            'method' => 'onKernelException',
-        ]);
     }
 
     /**
@@ -87,12 +83,22 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
      */
     public function it_registers_exception_formatting()
     {
-        $this->load([]);
+        $this->load([
+            'format_exceptions' => '/api',
+        ]);
 
         $this->assertContainerBuilderHasServiceDefinitionWithTag(ExceptionListener::class, 'kernel.event_listener', [
-            'event' => 'kernel.exception',
+            'event' => KernelEvents::EXCEPTION,
             'method' => 'onKernelException',
         ]);
+
+        /** @var Definition $requestMatcher */
+        $requestMatcher = $this->container
+            ->getDefinition(ExceptionListener::class)
+            ->getArgument(1)
+        ;
+        $this->assertEquals(RequestMatcher::class, $requestMatcher->getClass());
+        $this->assertEquals('/api', $requestMatcher->getArgument(0));
     }
 
     /**

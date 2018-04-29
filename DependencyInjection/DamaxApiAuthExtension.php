@@ -13,6 +13,7 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
+use Damax\Bundle\ApiAuthBundle\Request\RequestMatcher;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\AuthenticationHandler;
@@ -37,8 +38,8 @@ class DamaxApiAuthExtension extends ConfigurableExtension
             $this->configureJwt($config['jwt'], $container);
         }
 
-        if ($config['format_exceptions']) {
-            $this->configureExceptions($container);
+        if ($config['format_exceptions']['enabled']) {
+            $this->configureExceptions($config['format_exceptions'], $container);
         }
     }
 
@@ -118,12 +119,13 @@ class DamaxApiAuthExtension extends ConfigurableExtension
         return $this;
     }
 
-    private function configureExceptions(ContainerBuilder $container): self
+    private function configureExceptions(array $config, ContainerBuilder $container): self
     {
         $container
             ->register(ExceptionListener::class)
             ->setAutowired(true)
             ->addTag('kernel.event_listener', ['event' => 'kernel.exception', 'method' => 'onKernelException'])
+            ->setArgument(1, new Definition(RequestMatcher::class, [$config['base_url']]))
         ;
 
         return $this;
