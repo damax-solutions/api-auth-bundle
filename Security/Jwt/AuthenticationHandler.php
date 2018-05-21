@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Security\Jwt;
 
-use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
+use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +17,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 {
     private $builder;
 
-    public function __construct(Builder $builder)
+    public function __construct(TokenBuilder $builder)
     {
         $this->builder = $builder;
     }

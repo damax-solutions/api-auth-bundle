@@ -12,6 +12,7 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\SecurityClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
+use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Request\RequestMatcher;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
@@ -95,7 +96,8 @@ class DamaxApiAuthExtension extends ConfigurableExtension
 
         $claims = $this->configureJwtClaims($config['builder'], $clock, $container);
 
-        $builder = (new Definition(Builder::class))
+        $container
+            ->register(TokenBuilder::class, Builder::class)
             ->addArgument($configuration)
             ->addArgument($claims)
         ;
@@ -113,7 +115,7 @@ class DamaxApiAuthExtension extends ConfigurableExtension
         // Handler.
         $container
             ->register('damax.api_auth.jwt.handler', AuthenticationHandler::class)
-            ->addArgument($builder)
+            ->setAutowired(true)
         ;
 
         return $this;

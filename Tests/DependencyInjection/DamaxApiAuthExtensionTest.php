@@ -14,6 +14,7 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\SecurityClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
+use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Request\RequestMatcher;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
@@ -177,13 +178,9 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasService('damax.api_auth.jwt.handler');
 
-        /** @var Definition $builder */
-        $builder = $this->container
-            ->getDefinition('damax.api_auth.jwt.handler')
-            ->getArgument(0)
-        ;
-        $this->assertEquals(Builder::class, $builder->getClass());
-        $this->assertSame($config, $builder->getArgument(0));
+        // Builder
+        $this->assertContainerBuilderHasService(TokenBuilder::class, Builder::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TokenBuilder::class, 0, $config);
 
         // Claims
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(TimestampClaims::class, 0);
