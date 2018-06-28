@@ -12,5 +12,5 @@ interface ApiKeyUserProvider extends UserProviderInterface
     /**
      * @throws InvalidApiKeyException
      */
-    public function loadUserByApiKey(string $key): UserInterface;
+    public function loadUserByApiKey(string $apiKey): UserInterface;
 }

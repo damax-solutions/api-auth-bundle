@@ -9,9 +9,11 @@
     "symfony/security-bundle": "^3.4|^4.0"
   },
   "require-dev": {
+    "doctrine/dbal": "^2.7",
     "friendsofphp/php-cs-fixer": "^2.10",
     "matthiasnoback/symfony-dependency-injection-test": "^3.0",
     "php-coveralls/php-coveralls": "^2.0",
+    "predis/predis": "^1.1",
     "sensio/framework-extra-bundle": "^5.1",
     "symfony/phpunit-bridge": "^4.0"
   },
@@ -27,4 +29,3 @@
     }
   }
 }
-

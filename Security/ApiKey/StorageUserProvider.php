@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Security\ApiKey;
 
+use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFoundException;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\Reader;
 use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class TokenUserProvider implements ApiKeyUserProvider
+class StorageUserProvider implements ApiKeyUserProvider
 {
-    private $tokens;
+    private $storage;
 
-    public function __construct(array $tokens)
+    public function __construct(Reader $storage)
     {
-        $this->tokens = $tokens;
+        $this->storage = $storage;
     }
 
     public function supportsClass($class): bool
@@ -27,13 +29,19 @@ class TokenUserProvider implements ApiKeyUserProvider
         return new ApiUser($username);
     }
 
-    public function loadUserByApiKey(string $key): UserInterface
+    public function loadUserByApiKey(string $apiKey): UserInterface
     {
-        if (false === $username = array_search($key, $this->tokens)) {
+        try {
+            $key = $this->storage->get($apiKey);
+        } catch (KeyNotFoundException $e) {
             throw new InvalidApiKeyException();
         }
 
-        return $this->loadUserByUsername($username);
+        if ($key->expired()) {
+            throw new InvalidApiKeyException();
+        }
+
+        return $this->loadUserByUsername($key->username());
     }
 
     /**
