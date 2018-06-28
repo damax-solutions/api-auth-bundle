@@ -4,23 +4,24 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Tests\Security\ApiKey;
 
+use Damax\Bundle\ApiAuthBundle\Key\Storage\FixedStorage;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\InvalidApiKeyException;
-use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\User as SecurityUser;
 
-class TokenUserProviderTest extends TestCase
+class StorageUserProviderTest extends TestCase
 {
     /**
-     * @var TokenUserProvider
+     * @var StorageUserProvider
      */
     private $userProvider;
 
     protected function setUp()
     {
-        $this->userProvider = new TokenUserProvider(['foo' => 'ABC', 'bar' => 'XYZ']);
+        $this->userProvider = new StorageUserProvider(new FixedStorage(['foo' => 'ABC', 'bar' => 'XYZ']));
     }
 
     /**
@@ -77,10 +78,22 @@ class TokenUserProviderTest extends TestCase
     /**
      * @test
      */
+    public function it_throws_exception_when_loading_user_with_expired_key()
+    {
+        $this->expectException(InvalidApiKeyException::class);
+
+        $storage = new FixedStorage(['foo' => 'ABC', 'bar' => 'XYZ'], 0);
+
+        (new StorageUserProvider($storage))->loadUserByApiKey('ABC');
+    }
+
+    /**
+     * @test
+     */
     public function it_throws_exception_on_refreshing_user()
     {
         $this->expectException(UnsupportedUserException::class);
-        $this->expectExceptionMessage('Provider "Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider" must be configured as stateless.');
+        $this->expectExceptionMessage('Provider "Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider" must be configured as stateless.');
 
         $this->userProvider->refreshUser(new ApiUser('foo'));
     }

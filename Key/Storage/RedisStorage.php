@@ -7,7 +7,7 @@ namespace Damax\Bundle\ApiAuthBundle\Key\Storage;
 use Damax\Bundle\ApiAuthBundle\Key\Key;
 use Predis\Client;
 
-class RedisStorage implements Storage
+final class RedisStorage implements Storage
 {
     private $client;
 

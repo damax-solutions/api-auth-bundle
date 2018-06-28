@@ -31,6 +31,6 @@ final class FixedStorage implements Reader
             throw new KeyNotFoundException();
         }
 
-        return new Key($key, $username, time() + $this->ttl);
+        return new Key($key, $username, $this->ttl);
     }
 }

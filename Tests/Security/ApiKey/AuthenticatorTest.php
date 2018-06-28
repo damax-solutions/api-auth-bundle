@@ -6,8 +6,9 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Security\ApiKey;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\ApiKeyUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator;
-use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,9 +34,17 @@ class AuthenticatorTest extends TestCase
      */
     public function it_retrieves_user_by_api_key()
     {
-        $user = $this->authenticator->getUser('ABC', new TokenUserProvider(['user' => 'ABC']));
+        /** @var MockObject|ApiKeyUserProvider $provider */
+        $provider = $this->createMock(ApiKeyUserProvider::class);
 
-        $this->assertEquals('user', $user->getUsername());
+        $provider
+            ->expects($this->once())
+            ->method('loadUserByApiKey')
+            ->with('XYZ')
+            ->willReturn($user = new ApiUser('john.doe'))
+        ;
+
+        $this->assertSame($user, $this->authenticator->getUser('XYZ', $provider));
     }
 
     /**
@@ -46,16 +55,16 @@ class AuthenticatorTest extends TestCase
         /** @var UserInterface $user */
         $user = $this->createMock(UserInterface::class);
 
-        /** @var UserProviderInterface|MockObject $provider */
+        /** @var MockObject|UserProviderInterface $provider */
         $provider = $this->createMock(UserProviderInterface::class);
 
         $provider
             ->expects($this->once())
             ->method('loadUserByUsername')
-            ->with('ABC')
+            ->with('XYZ')
             ->willReturn($user)
         ;
 
-        $this->assertSame($user, $this->authenticator->getUser('ABC', $provider));
+        $this->assertSame($user, $this->authenticator->getUser('XYZ', $provider));
     }
 }
