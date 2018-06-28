@@ -13,6 +13,10 @@ class Configuration implements ConfigurationInterface
     const SIGNER_SYMMETRIC = 'symmetric';
     const SIGNER_ASYMMETRIC = 'asymmetric';
 
+    const STORAGE_FIXED = 'fixed';
+    const STORAGE_REDIS = 'redis';
+    const STORAGE_DOCTRINE = 'doctrine';
+
     private const SYMMETRIC_ALGOS = ['HS256', 'HS384', 'HS512'];
     private const ASYMMETRIC_ALGOS = ['RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512'];
 
@@ -38,24 +42,7 @@ class Configuration implements ConfigurationInterface
     {
         return (new ArrayNodeDefinition($name))
             ->canBeEnabled()
-            ->beforeNormalization()
-                ->ifTrue(function (array $config): bool {
-                    return !isset($config['tokens']);
-                })
-                ->then(function (array $config): array {
-                    $enabled = $config['enabled'];
-
-                    unset($config['enabled']);
-
-                    return ['enabled' => $enabled, 'tokens' => $config];
-                })
-            ->end()
             ->children()
-                ->arrayNode('tokens')
-                    ->useAttributeAsKey(true)
-                    ->requiresAtLeastOneElement()
-                    ->prototype('scalar')->isRequired()->end()
-                ->end()
                 ->append($this->extractorsNode('extractors', [
                     [
                         'type' => 'header',
@@ -63,6 +50,37 @@ class Configuration implements ConfigurationInterface
                         'prefix' => 'Token',
                     ],
                 ]))
+
+                ->enumNode('generator')
+                    ->values(['fixed', 'random'])
+                    ->defaultValue('random')
+                ->end()
+
+                ->arrayNode('storage')
+                    ->beforeNormalization()
+                        ->ifTrue(function (array $config): bool {
+                            return !isset($config[0]);
+                        })
+                        ->then(function (array $config): array {
+                            return [
+                                ['type' => self::STORAGE_FIXED, 'tokens' => $config],
+                            ];
+                        })
+                    ->end()
+                    ->arrayPrototype()
+                        ->children()
+                            ->enumNode('type')
+                                ->isRequired()
+                                ->values([self::STORAGE_FIXED, self::STORAGE_REDIS, self::STORAGE_DOCTRINE])
+                            ->end()
+                            ->arrayNode('tokens')
+                                ->useAttributeAsKey(true)
+                                ->requiresAtLeastOneElement()
+                                ->scalarPrototype()->isRequired()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
     }
@@ -106,7 +124,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->arrayNode('issuers')
                             ->requiresAtLeastOneElement()
-                            ->prototype('scalar')
+                            ->scalarPrototype()
                                 ->isRequired()
                             ->end()
                         ->end()
@@ -231,7 +249,7 @@ class Configuration implements ConfigurationInterface
     private function extractorsNode(string $name, array $defaults): ArrayNodeDefinition
     {
         return (new ArrayNodeDefinition($name))
-            ->prototype('array')
+            ->arrayPrototype()
                 ->children()
                     ->enumNode('type')
                         ->isRequired()

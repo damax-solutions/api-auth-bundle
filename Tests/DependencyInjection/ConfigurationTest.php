@@ -23,10 +23,11 @@ class ConfigurationTest extends TestCase
         $this->assertProcessedConfigurationEquals([$config], [
             'api_key' => [
                 'enabled' => false,
-                'tokens' => [],
                 'extractors' => [
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
                 ],
+                'generator' => 'random',
+                'storage' => [],
             ],
             'jwt' => [
                 'enabled' => false,
@@ -50,15 +51,23 @@ class ConfigurationTest extends TestCase
     public function it_processes_simplified_api_key_config()
     {
         $config = [
-            'api_key' => ['foo' => 'bar', 'baz' => 'qux'],
+            'api_key' => [
+                'storage' => ['foo' => 'bar', 'baz' => 'qux'],
+            ],
         ];
 
         $this->assertProcessedConfigurationEquals([$config], [
             'api_key' => [
                 'enabled' => true,
-                'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
                 'extractors' => [
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
+                ],
+                'generator' => 'random',
+                'storage' => [
+                    [
+                        'type' => 'fixed',
+                        'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
+                    ],
                 ],
             ],
         ], 'api_key');
@@ -71,11 +80,21 @@ class ConfigurationTest extends TestCase
     {
         $config = [
             'api_key' => [
-                'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
                 'extractors' => [
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
                     ['type' => 'query', 'name' => 'api_key'],
                     ['type' => 'cookie', 'name' => 'api_key'],
+                ],
+                'generator' => 'fixed',
+                'storage' => [
+                    [
+                        'type' => 'fixed',
+                        'tokens' => ['foo' => 'bar'],
+                    ],
+                    [
+                        'type' => 'fixed',
+                        'tokens' => ['baz' => 'qux'],
+                    ],
                 ],
             ],
         ];
@@ -83,11 +102,21 @@ class ConfigurationTest extends TestCase
         $this->assertProcessedConfigurationEquals([$config], [
             'api_key' => [
                 'enabled' => true,
-                'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
                 'extractors' => [
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
                     ['type' => 'query', 'name' => 'api_key'],
                     ['type' => 'cookie', 'name' => 'api_key'],
+                ],
+                'generator' => 'fixed',
+                'storage' => [
+                    [
+                        'type' => 'fixed',
+                        'tokens' => ['foo' => 'bar'],
+                    ],
+                    [
+                        'type' => 'fixed',
+                        'tokens' => ['baz' => 'qux'],
+                    ],
                 ],
             ],
         ], 'api_key');

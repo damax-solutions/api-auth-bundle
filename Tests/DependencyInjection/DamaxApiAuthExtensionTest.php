@@ -15,10 +15,11 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Request\RequestMatcher;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
-use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -35,23 +36,34 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
     {
         $this->load([
             'api_key' => [
-                'tokens' => [
-                    'foo' => 'bar',
-                    'baz' => 'qux',
-                ],
                 'extractors' => [
                     ['type' => 'header', 'name' => 'X-Authorization', 'prefix' => 'KEY'],
                     ['type' => 'query', 'name' => 'api_key'],
                     ['type' => 'cookie', 'name' => 'api_key'],
                 ],
+                'storage' => [
+                    'foo' => 'bar',
+                    'baz' => 'qux',
+                ],
             ],
         ]);
 
-        $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', TokenUserProvider::class);
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument('damax.api_auth.api_key.user_provider', 0, [
+        $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', StorageUserProvider::class);
+
+        /** @var Definition $drivers */
+        $drivers = $this->container
+            ->getDefinition('damax.api_auth.api_key.user_provider')
+            ->getArgument(0)
+        ;
+        $this->assertEquals(ChainStorage::class, $drivers->getClass());
+
+        /** @var Definition[] $definitions */
+        $definitions = $drivers->getArgument(0);
+
+        $this->assertEquals([
             'foo' => 'bar',
             'baz' => 'qux',
-        ]);
+        ], $definitions[0]->getArgument(0));
 
         $this->assertContainerBuilderHasService('damax.api_auth.api_key.authenticator', ApiKeyAuthenticator::class);
 

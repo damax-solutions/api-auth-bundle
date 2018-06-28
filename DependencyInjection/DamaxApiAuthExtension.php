@@ -13,10 +13,12 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
+use Damax\Bundle\ApiAuthBundle\Key\Generator\Generator;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Request\RequestMatcher;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
-use Damax\Bundle\ApiAuthBundle\Security\ApiKey\TokenUserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\AuthenticationHandler;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
 use Lcobucci\Clock\SystemClock;
@@ -51,18 +53,26 @@ class DamaxApiAuthExtension extends ConfigurableExtension
 
     private function configureApiKey(array $config, ContainerBuilder $container): self
     {
-        $extractors = $this->configureExtractors($config['extractors']);
+        $storage = $this->configureKeyStorage($config['storage']);
 
         // User provider.
         $container
-            ->register('damax.api_auth.api_key.user_provider', TokenUserProvider::class)
-            ->addArgument($config['tokens'])
+            ->register('damax.api_auth.api_key.user_provider', StorageUserProvider::class)
+            ->addArgument($storage)
         ;
+
+        $extractors = $this->configureExtractors($config['extractors']);
 
         // Authenticator.
         $container
             ->register('damax.api_auth.api_key.authenticator', ApiKeyAuthenticator::class)
             ->addArgument($extractors)
+        ;
+
+        // Key generator.
+        $container
+            ->register(Generator::class)
+            ->setClass(sprintf('Damax\\Bundle\\ApiAuthBundle\\Key\\Generator\\%Generator', ucfirst($config['generator'])))
         ;
 
         return $this;
@@ -188,5 +198,22 @@ class DamaxApiAuthExtension extends ConfigurableExtension
         }
 
         return new Definition(ChainExtractor::class, [$extractors]);
+    }
+
+    private function configureKeyStorage(array $config): Definition
+    {
+        $drivers = [];
+
+        foreach ($config as $item) {
+            $className = sprintf('Damax\\Bundle\\ApiAuthBundle\\Key\\Storage\\%sStorage', ucfirst($item['type']));
+
+            $drivers[] = $driver = new Definition($className);
+
+            if (Configuration::STORAGE_FIXED === $item['type']) {
+                $driver->addArgument($item['tokens']);
+            }
+        }
+
+        return new Definition(ChainStorage::class, [$drivers]);
     }
 }

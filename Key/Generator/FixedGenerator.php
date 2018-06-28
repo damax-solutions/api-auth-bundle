@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Key\Generator;
 
-class FixedGenerator implements Generator
+final class FixedGenerator implements Generator
 {
     private $key;
 
