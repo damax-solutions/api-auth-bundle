@@ -54,7 +54,9 @@ final class DoctrineStorage implements Storage
 
     public function get(string $key): Key
     {
-        $sql = sprintf('SELECT * FROM %s WHERE %s = ?', $this->tableName, $this->fields[self::FIELD_KEY]);
+        $fields = $this->fields[self::FIELD_USERNAME] . ', ' . $this->fields[self::FIELD_EXPIRES];
+
+        $sql = sprintf('SELECT %s FROM %s WHERE %s = ?', $fields, $this->tableName, $this->fields[self::FIELD_KEY]);
 
         if (false === $row = $this->db->executeQuery($sql, [$key])->fetch(FetchMode::ASSOCIATIVE)) {
             throw new KeyNotFoundException();
