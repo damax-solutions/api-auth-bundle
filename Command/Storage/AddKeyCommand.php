@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class AddKeyCommand extends Command
+final class AddKeyCommand extends Command
 {
     protected static $defaultName = 'damax:api-auth:storage:add-key';
 

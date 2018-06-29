@@ -35,7 +35,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-class DamaxApiAuthExtension extends ConfigurableExtension
+final class DamaxApiAuthExtension extends ConfigurableExtension
 {
     protected function loadInternal(array $config, ContainerBuilder $container)
     {

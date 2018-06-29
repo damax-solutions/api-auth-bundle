@@ -6,6 +6,9 @@ namespace Damax\Bundle\ApiAuthBundle\Key\Storage;
 
 use Damax\Bundle\ApiAuthBundle\Key\Key;
 
+/**
+ * @codeCoverageIgnore
+ */
 class DummyStorage implements Writer
 {
     public function add(Key $key): void

@@ -8,7 +8,7 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
     const SIGNER_SYMMETRIC = 'symmetric';
     const SIGNER_ASYMMETRIC = 'asymmetric';

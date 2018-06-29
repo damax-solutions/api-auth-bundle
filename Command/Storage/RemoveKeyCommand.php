@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class RemoveKeyCommand extends Command
+final class RemoveKeyCommand extends Command
 {
     protected static $defaultName = 'damax:api-auth:storage:remove-key';
 

@@ -15,7 +15,8 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
-use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Generator\Generator;
+use Damax\Bundle\ApiAuthBundle\Key\Generator\RandomGenerator;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Request\RequestMatcher;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
@@ -49,22 +50,7 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         ]);
 
         $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', StorageUserProvider::class);
-
-        /** @var Definition $drivers */
-        $drivers = $this->container
-            ->getDefinition('damax.api_auth.api_key.user_provider')
-            ->getArgument(0)
-        ;
-        $this->assertEquals(ChainStorage::class, $drivers->getClass());
-
-        /** @var Definition[] $definitions */
-        $definitions = $drivers->getArgument(0);
-
-        $this->assertEquals([
-            'foo' => 'bar',
-            'baz' => 'qux',
-        ], $definitions[0]->getArgument(0));
-
+        $this->assertContainerBuilderHasService(Generator::class, RandomGenerator::class);
         $this->assertContainerBuilderHasService('damax.api_auth.api_key.authenticator', ApiKeyAuthenticator::class);
 
         /** @var Definition $extractors */

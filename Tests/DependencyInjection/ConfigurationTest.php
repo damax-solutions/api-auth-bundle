@@ -67,6 +67,9 @@ class ConfigurationTest extends TestCase
                     [
                         'type' => 'fixed',
                         'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
+                        'writable' => false,
+                        'redis_client_id' => 'snc_redis.default',
+                        'doctrine_connection_id' => 'database_connection',
                     ],
                 ],
             ],
@@ -89,11 +92,19 @@ class ConfigurationTest extends TestCase
                 'storage' => [
                     [
                         'type' => 'fixed',
-                        'tokens' => ['foo' => 'bar'],
+                        'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
                     ],
                     [
-                        'type' => 'fixed',
-                        'tokens' => ['baz' => 'qux'],
+                        'type' => 'redis',
+                        'writable' => true,
+                        'redis_client_id' => 'redis_service_id',
+                    ],
+                    [
+                        'type' => 'doctrine',
+                        'writable' => false,
+                        'doctrine_connection_id' => 'doctrine_connection',
+                        'table_name' => 'api_key',
+                        'fields' => ['key' => 'id', 'username' => 'email', 'expires' => 'expires_at'],
                     ],
                 ],
             ],
@@ -111,11 +122,26 @@ class ConfigurationTest extends TestCase
                 'storage' => [
                     [
                         'type' => 'fixed',
-                        'tokens' => ['foo' => 'bar'],
+                        'tokens' => ['foo' => 'bar', 'baz' => 'qux'],
+                        'writable' => false,
+                        'redis_client_id' => 'snc_redis.default',
+                        'doctrine_connection_id' => 'database_connection',
                     ],
                     [
-                        'type' => 'fixed',
-                        'tokens' => ['baz' => 'qux'],
+                        'type' => 'redis',
+                        'tokens' => [],
+                        'writable' => true,
+                        'redis_client_id' => 'redis_service_id',
+                        'doctrine_connection_id' => 'database_connection',
+                    ],
+                    [
+                        'type' => 'doctrine',
+                        'tokens' => [],
+                        'writable' => false,
+                        'redis_client_id' => 'snc_redis.default',
+                        'doctrine_connection_id' => 'doctrine_connection',
+                        'table_name' => 'api_key',
+                        'fields' => ['key' => 'id', 'username' => 'email', 'expires' => 'expires_at'],
                     ],
                 ],
             ],
