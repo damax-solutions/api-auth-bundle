@@ -42,13 +42,13 @@ class ChainStorageTest extends TestCase
         $key = $this->storage->get('ABC');
 
         $this->assertEquals('ABC', $key->key());
-        $this->assertEquals('john.doe', $key->username());
+        $this->assertEquals('john.doe', $key->identity());
         $this->assertEquals(60, $key->ttl());
 
         $key = $this->storage->get('XYZ');
 
         $this->assertEquals('XYZ', $key->key());
-        $this->assertEquals('jane.doe', $key->username());
+        $this->assertEquals('jane.doe', $key->identity());
         $this->assertEquals(90, $key->ttl());
     }
 

@@ -18,7 +18,7 @@ class FactoryTest extends TestCase
         $key = (new Factory(new FixedGenerator('XYZ')))->createKey('john.doe', 600);
 
         $this->assertEquals('XYZ', $key->key());
-        $this->assertEquals('john.doe', $key->username());
+        $this->assertEquals('john.doe', $key->identity());
         $this->assertEquals(600, $key->ttl());
     }
 }

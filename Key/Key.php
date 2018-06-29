@@ -7,13 +7,13 @@ namespace Damax\Bundle\ApiAuthBundle\Key;
 final class Key
 {
     private $key;
-    private $username;
+    private $identity;
     private $ttl;
 
-    public function __construct(string $key, string $username, int $ttl)
+    public function __construct(string $key, string $identity, int $ttl)
     {
         $this->key = $key;
-        $this->username = $username;
+        $this->identity = $identity;
         $this->ttl = $ttl > 0 ? $ttl : 0;
     }
 
@@ -22,9 +22,9 @@ final class Key
         return $this->key;
     }
 
-    public function username(): string
+    public function identity(): string
     {
-        return $this->username;
+        return $this->identity;
     }
 
     public function ttl(): int

@@ -17,7 +17,7 @@ class KeyTest extends TestCase
         $key = new Key('XYZ', 'john.doe', 3600);
 
         $this->assertEquals('XYZ', $key->key());
-        $this->assertEquals('john.doe', $key->username());
+        $this->assertEquals('john.doe', $key->identity());
         $this->assertEquals(3600, $key->ttl());
         $this->assertFalse($key->expired());
     }

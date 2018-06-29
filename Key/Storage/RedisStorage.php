@@ -26,16 +26,16 @@ final class RedisStorage implements Storage
      */
     public function get(string $key): Key
     {
-        if (null === $username = $this->client->get($key)) {
+        if (null === $identity = $this->client->get($key)) {
             throw new KeyNotFoundException();
         }
 
-        return new Key($key, $username, $this->client->ttl($key));
+        return new Key($key, $identity, $this->client->ttl($key));
     }
 
     public function add(Key $key): void
     {
-        $this->client->setex((string) $key, $key->ttl(), $key->username());
+        $this->client->setex((string) $key, $key->ttl(), $key->identity());
     }
 
     public function remove(string $key): void

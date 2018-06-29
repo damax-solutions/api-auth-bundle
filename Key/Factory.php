@@ -15,8 +15,8 @@ final class Factory
         $this->generator = $generator;
     }
 
-    public function createKey(string $username, int $ttl): Key
+    public function createKey(string $identity, int $ttl): Key
     {
-        return new Key($this->generator->generateKey(), $username, $ttl);
+        return new Key($this->generator->generateKey(), $identity, $ttl);
     }
 }

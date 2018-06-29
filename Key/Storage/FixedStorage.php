@@ -27,10 +27,10 @@ final class FixedStorage implements Reader
      */
     public function get(string $key): Key
     {
-        if (false === $username = array_search($key, $this->data)) {
+        if (false === $identity = array_search($key, $this->data)) {
             throw new KeyNotFoundException();
         }
 
-        return new Key($key, $username, $this->ttl);
+        return new Key($key, $identity, $this->ttl);
     }
 }

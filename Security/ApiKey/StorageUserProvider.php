@@ -41,7 +41,7 @@ class StorageUserProvider implements ApiKeyUserProvider
             throw new InvalidApiKeyException();
         }
 
-        return $this->loadUserByUsername($key->username());
+        return $this->loadUserByUsername($key->identity());
     }
 
     /**

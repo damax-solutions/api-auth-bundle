@@ -31,7 +31,7 @@ final class AddKeyCommand extends Command
     {
         $this
             ->setDescription('Add api key to storage.')
-            ->addArgument('username', InputArgument::REQUIRED, 'Username for the key.')
+            ->addArgument('identity', InputArgument::REQUIRED, 'Identity of the key.')
             ->addArgument('ttl', InputArgument::OPTIONAL, 'Time to live in free form.', '1 week')
         ;
     }
@@ -46,7 +46,7 @@ final class AddKeyCommand extends Command
             return 1;
         }
 
-        $key = $this->factory->createKey($input->getArgument('username'), $ttl);
+        $key = $this->factory->createKey($input->getArgument('identity'), $ttl);
 
         $this->storage->add($key);
 

@@ -48,7 +48,7 @@ final class LookupKeyCommand extends Command
         $io->writeln('');
         $io->table([], [
             ['Key', (string) $key],
-            ['Username', $key->username()],
+            ['Identity', $key->identity()],
             ['TTL', $key->ttl()],
         ]);
     }

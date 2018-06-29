@@ -99,7 +99,7 @@ final class Configuration implements ConfigurationInterface
                                     ->scalarNode('key')
                                         ->cannotBeEmpty()
                                     ->end()
-                                    ->scalarNode('username')
+                                    ->scalarNode('identity')
                                         ->cannotBeEmpty()
                                     ->end()
                                     ->scalarNode('expires')

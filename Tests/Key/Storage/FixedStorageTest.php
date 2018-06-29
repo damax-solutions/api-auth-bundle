@@ -34,13 +34,13 @@ class FixedStorageTest extends TestCase
         $key = $storage->get('ABC');
 
         $this->assertEquals('ABC', $key->key());
-        $this->assertEquals('john.doe', $key->username());
+        $this->assertEquals('john.doe', $key->identity());
         $this->assertEquals(600, $key->ttl());
 
         $key = $storage->get('XYZ');
 
         $this->assertEquals('XYZ', $key->key());
-        $this->assertEquals('jane.doe', $key->username());
+        $this->assertEquals('jane.doe', $key->identity());
         $this->assertEquals(600, $key->ttl());
     }
 
