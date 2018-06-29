@@ -9,7 +9,6 @@ use Damax\Bundle\ApiAuthBundle\Key\Storage\Writer as Storage;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -30,22 +29,27 @@ class AddKeyCommand extends Command
 
     protected function configure()
     {
-        // 10 years.
-        $ttl = 3600 * 24 * 365 * 10;
-
         $this
             ->setDescription('Add api key to storage.')
             ->addArgument('username', InputArgument::REQUIRED, 'Username for the key.')
-            ->addOption('ttl', null, InputOption::VALUE_REQUIRED, 'Time to live in seconds.', $ttl)
+            ->addArgument('ttl', InputArgument::OPTIONAL, 'Time to live in free form.', '1 week')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $key = $this->factory->createKey($input->getArgument('username'), (int) $input->getOption('ttl'));
+        $io = new SymfonyStyle($input, $output);
+
+        if (false === $ttl = strtotime($input->getArgument('ttl'), 0)) {
+            $io->error('Invalid ttl.');
+
+            return 1;
+        }
+
+        $key = $this->factory->createKey($input->getArgument('username'), $ttl);
 
         $this->storage->add($key);
 
-        (new SymfonyStyle($input, $output))->success('Key: ' . (string) $key);
+        $io->success('Key: ' . (string) $key);
     }
 }

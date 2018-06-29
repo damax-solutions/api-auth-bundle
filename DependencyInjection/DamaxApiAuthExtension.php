@@ -214,7 +214,13 @@ class DamaxApiAuthExtension extends ConfigurableExtension
             if (Configuration::STORAGE_FIXED === $item['type']) {
                 $driver->addArgument($item['tokens']);
             } elseif (Configuration::STORAGE_REDIS === $item['type']) {
-                $driver->addArgument(new Reference($item['client_id']));
+                $driver->addArgument(new Reference($item['redis_client_id']));
+            } elseif (Configuration::STORAGE_DOCTRINE === $item['type']) {
+                $driver
+                    ->addArgument(new Reference($item['doctrine_connection_id']))
+                    ->addArgument($item['table_name'])
+                    ->addArgument($item['fields'] ?? [])
+                ;
             }
 
             if ($item['writable']) {
