@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Key\Storage;
 
 use Damax\Bundle\ApiAuthBundle\Key\Key;
-use Predis\Client;
+use Predis\ClientInterface;
 
 final class RedisStorage implements Storage
 {
     private $client;
 
-    public function __construct(Client $client)
+    public function __construct(ClientInterface $client)
     {
         $this->client = $client;
     }

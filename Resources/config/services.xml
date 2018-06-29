@@ -11,5 +11,13 @@
             <tag name="controller.service_arguments" />
         </prototype>
 
+        <!-- Commands -->
+
+        <prototype namespace="Damax\Bundle\ApiAuthBundle\Command\" resource="../../Command" />
+
+        <!-- Key -->
+
+        <service id="Damax\Bundle\ApiAuthBundle\Key\Factory" />
+
     </services>
 </container>
