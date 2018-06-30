@@ -11,15 +11,15 @@ use Doctrine\DBAL\FetchMode;
 final class DoctrineStorage implements Storage
 {
     private const FIELD_KEY = 'key';
+    private const FIELD_TTL = 'ttl';
     private const FIELD_IDENTITY = 'identity';
-    private const FIELD_EXPIRES = 'expires';
 
     private $db;
     private $tableName;
     private $fields = [
         self::FIELD_KEY => self::FIELD_KEY,
+        self::FIELD_TTL => self::FIELD_TTL,
         self::FIELD_IDENTITY => self::FIELD_IDENTITY,
-        self::FIELD_EXPIRES => self::FIELD_EXPIRES,
     ];
 
     public function __construct(Connection $db, string $tableName, array $fields = [])
@@ -48,13 +48,13 @@ final class DoctrineStorage implements Storage
         $this->db->insert($this->tableName, [
             $this->fields[self::FIELD_KEY] => (string) $key,
             $this->fields[self::FIELD_IDENTITY] => $key->identity(),
-            $this->fields[self::FIELD_EXPIRES] => time() + $key->ttl(),
+            $this->fields[self::FIELD_TTL] => time() + $key->ttl(),
         ]);
     }
 
     public function get(string $key): Key
     {
-        $fields = $this->fields[self::FIELD_IDENTITY] . ', ' . $this->fields[self::FIELD_EXPIRES];
+        $fields = $this->fields[self::FIELD_IDENTITY] . ', ' . $this->fields[self::FIELD_TTL];
 
         $sql = sprintf('SELECT %s FROM %s WHERE %s = ?', $fields, $this->tableName, $this->fields[self::FIELD_KEY]);
 
@@ -62,6 +62,6 @@ final class DoctrineStorage implements Storage
             throw new KeyNotFoundException();
         }
 
-        return new Key($key, $row[$this->fields[self::FIELD_IDENTITY]], $row[$this->fields[self::FIELD_EXPIRES]] - time());
+        return new Key($key, $row[$this->fields[self::FIELD_IDENTITY]], $row[$this->fields[self::FIELD_TTL]] - time());
     }
 }
