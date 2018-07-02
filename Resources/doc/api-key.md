@@ -85,7 +85,7 @@ To fine tune extractors to look up for a key in cookie, query and/or header, con
 ```yaml
 damax_api_auth:
     api_key:
-        tokens:
+        storage:
             app_one: '%env(API_TOKEN_APP_ONE)%'
             app_two: '%env(API_TOKEN_APP_TWO)%'
         extractors:
