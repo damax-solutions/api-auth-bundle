@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Tests\Key\Storage;
 
-use Damax\Bundle\ApiAuthBundle\Key\Storage\FixedStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\InMemoryStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFound;
 use PHPUnit\Framework\TestCase;
 
-class FixedStorageTest extends TestCase
+class InMemoryStorageTest extends TestCase
 {
     /**
      * @test
      */
     public function it_checks_key_existence()
     {
-        $storage = new FixedStorage(['john.doe' => 'ABC', 'jane.doe' => 'XYZ'], 600);
+        $storage = new InMemoryStorage(['john.doe' => 'ABC', 'jane.doe' => 'XYZ'], 600);
 
         $this->assertTrue($storage->has('ABC'));
         $this->assertTrue($storage->has('XYZ'));
@@ -29,7 +29,7 @@ class FixedStorageTest extends TestCase
      *
      * @test
      */
-    public function it_retrieves_key(FixedStorage $storage)
+    public function it_retrieves_key(InMemoryStorage $storage)
     {
         $key = $storage->get('ABC');
 
@@ -49,7 +49,7 @@ class FixedStorageTest extends TestCase
      *
      * @test
      */
-    public function it_throws_exception_when_retrieving_missing_key(FixedStorage $storage)
+    public function it_throws_exception_when_retrieving_missing_key(InMemoryStorage $storage)
     {
         $this->expectException(KeyNotFound::class);
 

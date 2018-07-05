@@ -6,7 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Key\Storage;
 
 use Damax\Bundle\ApiAuthBundle\Key\Key;
 
-final class FixedStorage implements Reader
+final class InMemoryStorage implements Reader
 {
     private $data;
     private $ttl;

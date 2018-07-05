@@ -26,7 +26,7 @@ class RedisStorageTest extends TestCase
     protected function setUp()
     {
         $this->client = $this->createMock(ClientInterface::class);
-        $this->storage = new RedisStorage($this->client);
+        $this->storage = new RedisStorage($this->client, 'api_');
     }
 
     /**
@@ -37,7 +37,7 @@ class RedisStorageTest extends TestCase
         $this->client
             ->expects($this->exactly(2))
             ->method('__call')
-            ->withConsecutive(['exists', ['foo']], ['exists', ['bar']])
+            ->withConsecutive(['exists', ['api_foo']], ['exists', ['api_bar']])
             ->willReturn(true, false)
         ;
 
@@ -53,7 +53,10 @@ class RedisStorageTest extends TestCase
         $this->client
             ->expects($this->exactly(2))
             ->method('__call')
-            ->withConsecutive(['del', [['foo']]], ['del', [['bar']]])
+            ->withConsecutive(
+                ['del', [['api_foo']]],
+                ['del', [['api_bar']]]
+            )
         ;
 
         $this->storage->remove('foo');
@@ -68,7 +71,7 @@ class RedisStorageTest extends TestCase
         $this->client
             ->expects($this->once())
             ->method('__call')
-            ->with('setex', ['XYZ', 60, 'john.doe'])
+            ->with('setex', ['api_XYZ', 60, 'john.doe'])
         ;
 
         $this->storage->add(new Key('XYZ', 'john.doe', 60));
@@ -83,8 +86,8 @@ class RedisStorageTest extends TestCase
             ->expects($this->exactly(2))
             ->method('__call')
             ->withConsecutive(
-                ['get', ['XYZ']],
-                ['ttl', ['XYZ']]
+                ['get', ['api_XYZ']],
+                ['ttl', ['api_XYZ']]
             )
             ->willReturnOnConsecutiveCalls('john.doe', 60)
         ;
@@ -104,7 +107,7 @@ class RedisStorageTest extends TestCase
         $this->client
             ->expects($this->once())
             ->method('__call')
-            ->with('get', ['XYZ'])
+            ->with('get', ['api_XYZ'])
         ;
 
         $this->expectException(KeyNotFound::class);

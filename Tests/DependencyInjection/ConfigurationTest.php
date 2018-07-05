@@ -98,6 +98,7 @@ class ConfigurationTest extends TestCase
                         'type' => 'redis',
                         'writable' => true,
                         'redis_client_id' => 'redis_service_id',
+                        'key_prefix' => 'api_',
                     ],
                     [
                         'type' => 'doctrine',
@@ -133,6 +134,7 @@ class ConfigurationTest extends TestCase
                         'tokens' => [],
                         'writable' => true,
                         'redis_client_id' => 'redis_service_id',
+                        'key_prefix' => 'api_',
                         'doctrine_connection_id' => 'database_connection',
                         'table_name' => 'api_key',
                     ],

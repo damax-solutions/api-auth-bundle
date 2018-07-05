@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Tests\Key\Storage;
 
 use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
-use Damax\Bundle\ApiAuthBundle\Key\Storage\FixedStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\InMemoryStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFound;
 use PHPUnit\Framework\TestCase;
 
@@ -19,8 +19,8 @@ class ChainStorageTest extends TestCase
     protected function setUp()
     {
         $this->storage = new ChainStorage([
-            new FixedStorage(['john.doe' => 'ABC'], 60),
-            new FixedStorage(['jane.doe' => 'XYZ'], 90),
+            new InMemoryStorage(['john.doe' => 'ABC'], 60),
+            new InMemoryStorage(['jane.doe' => 'XYZ'], 90),
         ]);
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Tests\Security\ApiKey;
 
-use Damax\Bundle\ApiAuthBundle\Key\Storage\FixedStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\InMemoryStorage;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\InvalidApiKey;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
@@ -21,7 +21,7 @@ class StorageUserProviderTest extends TestCase
 
     protected function setUp()
     {
-        $this->userProvider = new StorageUserProvider(new FixedStorage(['foo' => 'ABC', 'bar' => 'XYZ']));
+        $this->userProvider = new StorageUserProvider(new InMemoryStorage(['foo' => 'ABC', 'bar' => 'XYZ']));
     }
 
     /**
@@ -82,7 +82,7 @@ class StorageUserProviderTest extends TestCase
     {
         $this->expectException(InvalidApiKey::class);
 
-        $storage = new FixedStorage(['foo' => 'ABC', 'bar' => 'XYZ'], 0);
+        $storage = new InMemoryStorage(['foo' => 'ABC', 'bar' => 'XYZ'], 0);
 
         (new StorageUserProvider($storage))->loadUserByApiKey('ABC');
     }

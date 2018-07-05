@@ -17,6 +17,11 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
 use Damax\Bundle\ApiAuthBundle\Key\Generator\Generator;
 use Damax\Bundle\ApiAuthBundle\Key\Generator\RandomGenerator;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\DoctrineStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\InMemoryStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\Reader;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\RedisStorage;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
@@ -25,6 +30,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -42,16 +48,13 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
                     ['type' => 'query', 'name' => 'api_key'],
                     ['type' => 'cookie', 'name' => 'api_key'],
                 ],
-                'storage' => [
-                    'foo' => 'bar',
-                    'baz' => 'qux',
-                ],
             ],
         ]);
 
-        $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', StorageUserProvider::class);
         $this->assertContainerBuilderHasService(Generator::class, RandomGenerator::class);
+        $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', StorageUserProvider::class);
         $this->assertContainerBuilderHasService('damax.api_auth.api_key.authenticator', ApiKeyAuthenticator::class);
+        $this->assertContainerBuilderHasService(Reader::class, ChainStorage::class);
 
         /** @var Definition $extractors */
         $extractors = $this->container
@@ -59,22 +62,114 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
             ->getArgument(0)
         ;
         $this->assertEquals(ChainExtractor::class, $extractors->getClass());
+    }
 
-        /** @var Definition[] $definitions */
-        $definitions = $extractors->getArgument(0);
+    /**
+     * @test
+     */
+    public function it_registers_key_extractors()
+    {
+        $this->load([
+            'api_key' => [
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'X-Authorization', 'prefix' => 'KEY'],
+                    ['type' => 'query', 'name' => 'api_key'],
+                    ['type' => 'cookie', 'name' => 'api_key'],
+                ],
+            ],
+        ]);
+
+        /** @var Definition[] $extractors */
+        $extractors = $this->container
+            ->getDefinition('damax.api_auth.api_key.authenticator')
+            ->getArgument(0)
+            ->getArgument(0)
+        ;
 
         // Header
-        $this->assertEquals(HeaderExtractor::class, $definitions[0]->getClass());
-        $this->assertEquals('X-Authorization', $definitions[0]->getArgument(0));
-        $this->assertEquals('KEY', $definitions[0]->getArgument(1));
+        $this->assertEquals(HeaderExtractor::class, $extractors[0]->getClass());
+        $this->assertEquals('X-Authorization', $extractors[0]->getArgument(0));
+        $this->assertEquals('KEY', $extractors[0]->getArgument(1));
 
         // Query
-        $this->assertEquals(QueryExtractor::class, $definitions[1]->getClass());
-        $this->assertEquals('api_key', $definitions[1]->getArgument(0));
+        $this->assertEquals(QueryExtractor::class, $extractors[1]->getClass());
+        $this->assertEquals('api_key', $extractors[1]->getArgument(0));
 
         // Cookie
-        $this->assertEquals(CookieExtractor::class, $definitions[2]->getClass());
-        $this->assertEquals('api_key', $definitions[2]->getArgument(0));
+        $this->assertEquals(CookieExtractor::class, $extractors[2]->getClass());
+        $this->assertEquals('api_key', $extractors[2]->getArgument(0));
+    }
+
+    /**
+     * @test
+     */
+    public function it_registers_key_storage_drivers()
+    {
+        $this->load([
+            'api_key' => [
+                'storage' => [
+                    [
+                        'type' => 'fixed',
+                        'tokens' => ['john.doe' => 'ABC', 'jane.doe' => 'XYZ'],
+                    ],
+                    [
+                        'type' => 'redis',
+                        'key_prefix' => 'api_',
+                    ],
+                    [
+                        'type' => 'doctrine',
+                        'fields' => ['key' => 'id', 'identity' => 'user_id'],
+                    ],
+                ],
+            ],
+        ]);
+
+        /** @var Definition[] $drivers */
+        $drivers = $this->container->getDefinition(Reader::class)->getArgument(0);
+
+        // In memory
+        $this->assertEquals(InMemoryStorage::class, $drivers[0]->getClass());
+        $this->assertEquals(['john.doe' => 'ABC', 'jane.doe' => 'XYZ'], $drivers[0]->getArgument(0));
+
+        // Redis
+        $this->assertEquals(RedisStorage::class, $drivers[1]->getClass());
+        $this->assertEquals(new Reference('snc_redis.default'), $drivers[1]->getArgument(0));
+        $this->assertEquals('api_', $drivers[1]->getArgument(1));
+
+        // Doctrine
+        $this->assertEquals(DoctrineStorage::class, $drivers[2]->getClass());
+        $this->assertEquals(new Reference('database_connection'), $drivers[2]->getArgument(0));
+        $this->assertEquals('api_key', $drivers[2]->getArgument(1));
+        $this->assertEquals(['key' => 'id', 'identity' => 'user_id'], $drivers[2]->getArgument(2));
+    }
+
+    /**
+     * @test
+     */
+    public function it_skips_exception_listener_registration()
+    {
+        $this->load(['format_exceptions' => false]);
+
+        $this->assertContainerBuilderNotHasService(ExceptionListener::class);
+    }
+
+    /**
+     * @test
+     */
+    public function it_registers_exception_listener()
+    {
+        $this->load(['format_exceptions' => '^/api/']);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(ExceptionListener::class, 'kernel.event_listener', [
+            'event' => KernelEvents::EXCEPTION,
+            'method' => 'onKernelException',
+        ]);
+
+        /** @var Definition $matcher */
+        $matcher = $this->container->getDefinition(ExceptionListener::class)->getArgument(1);
+
+        $this->assertEquals(RequestMatcher::class, $matcher->getClass());
+        $this->assertEquals('^/api/', $matcher->getArgument(0));
     }
 
     /**
@@ -158,35 +253,6 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithTag(SecurityClaims::class, 'damax.api_auth.jwt_claims');
 
         unlink($key);
-    }
-
-    /**
-     * @test
-     */
-    public function it_skips_exception_listener_registration()
-    {
-        $this->load(['format_exceptions' => false]);
-
-        $this->assertContainerBuilderNotHasService(ExceptionListener::class);
-    }
-
-    /**
-     * @test
-     */
-    public function it_registers_exception_listener()
-    {
-        $this->load(['format_exceptions' => '^/api/']);
-
-        $this->assertContainerBuilderHasServiceDefinitionWithTag(ExceptionListener::class, 'kernel.event_listener', [
-            'event' => KernelEvents::EXCEPTION,
-            'method' => 'onKernelException',
-        ]);
-
-        /** @var Definition $matcher */
-        $matcher = $this->container->getDefinition(ExceptionListener::class)->getArgument(1);
-
-        $this->assertEquals(RequestMatcher::class, $matcher->getClass());
-        $this->assertEquals('^/api/', $matcher->getArgument(0));
     }
 
     protected function getContainerExtensions(): array

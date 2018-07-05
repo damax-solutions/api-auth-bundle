@@ -15,8 +15,11 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
 use Damax\Bundle\ApiAuthBundle\Key\Generator\Generator;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\DoctrineStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\DummyStorage;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\InMemoryStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Reader;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\RedisStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Writer;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
@@ -205,19 +208,25 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
         $container->register(Writer::class, DummyStorage::class);
 
         foreach ($config as $item) {
-            $className = sprintf('Damax\\Bundle\\ApiAuthBundle\\Key\\Storage\\%sStorage', ucfirst($item['type']));
+            $drivers[] = $driver = new Definition();
 
-            $drivers[] = $driver = new Definition($className);
-
-            if (Configuration::STORAGE_FIXED === $item['type']) {
-                $driver->addArgument($item['tokens']);
-            } elseif (Configuration::STORAGE_REDIS === $item['type']) {
-                $driver->addArgument(new Reference($item['redis_client_id']));
+            if (Configuration::STORAGE_REDIS === $item['type']) {
+                $driver
+                    ->setClass(RedisStorage::class)
+                    ->addArgument(new Reference($item['redis_client_id']))
+                    ->addArgument($item['key_prefix'] ?? '')
+                ;
             } elseif (Configuration::STORAGE_DOCTRINE === $item['type']) {
                 $driver
+                    ->setClass(DoctrineStorage::class)
                     ->addArgument(new Reference($item['doctrine_connection_id']))
                     ->addArgument($item['table_name'])
                     ->addArgument($item['fields'] ?? [])
+                ;
+            } else {
+                $driver
+                    ->setClass(InMemoryStorage::class)
+                    ->addArgument($item['tokens'])
                 ;
             }
 
