@@ -10,15 +10,15 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 final class Configuration implements ConfigurationInterface
 {
-    const SIGNER_SYMMETRIC = 'symmetric';
-    const SIGNER_ASYMMETRIC = 'asymmetric';
-
-    const STORAGE_FIXED = 'fixed';
-    const STORAGE_REDIS = 'redis';
-    const STORAGE_DOCTRINE = 'doctrine';
+    public const SIGNER_SYMMETRIC = 'symmetric';
+    public const SIGNER_ASYMMETRIC = 'asymmetric';
 
     private const SYMMETRIC_ALGOS = ['HS256', 'HS384', 'HS512'];
     private const ASYMMETRIC_ALGOS = ['RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512'];
+
+    public const STORAGE_FIXED = 'fixed';
+    public const STORAGE_REDIS = 'redis';
+    public const STORAGE_DOCTRINE = 'doctrine';
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -259,13 +259,11 @@ final class Configuration implements ConfigurationInterface
             ->beforeNormalization()
                 ->ifString()
                 ->then(function (string $config): array {
-                    return ['enabled' => true, 'base_url' => $config];
+                    return ['enabled' => true, 'path' => $config];
                 })
             ->end()
             ->children()
-                ->scalarNode('base_url')
-                    ->defaultValue('/')
-                ->end()
+                ->scalarNode('path')->cannotBeEmpty()->end()
             ->end()
         ;
     }

@@ -40,7 +40,6 @@ class ConfigurationTest extends TestCase
             ],
             'format_exceptions' => [
                 'enabled' => false,
-                'base_url' => '/',
             ],
         ]);
     }
@@ -80,7 +79,7 @@ class ConfigurationTest extends TestCase
     /**
      * @test
      */
-    public function it_processes_api_key_config()
+    public function it_configures_api_key()
     {
         $config = [
             'api_key' => [
@@ -149,60 +148,6 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ], 'api_key');
-    }
-
-    /**
-     * @test
-     */
-    public function it_processes_basic_jwt_config()
-    {
-        $config = [
-            'jwt' => [
-                'builder' => [
-                    'issuer' => 'damax-api-auth-bundle',
-                    'audience' => 'symfony',
-                    'ttl' => 600,
-                ],
-                'parser' => [
-                    'issuers' => ['symfony', 'zend'],
-                    'audience' => 'zend',
-                ],
-                'extractors' => [
-                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
-                    ['type' => 'query', 'name' => 'token'],
-                    ['type' => 'cookie', 'name' => 'token'],
-                ],
-                'signer' => [
-                    'signing_key' => 'secret',
-                ],
-            ],
-        ];
-
-        $this->assertProcessedConfigurationEquals([$config], [
-            'jwt' => [
-                'enabled' => true,
-                'builder' => [
-                    'issuer' => 'damax-api-auth-bundle',
-                    'audience' => 'symfony',
-                    'ttl' => 600,
-                ],
-                'parser' => [
-                    'issuers' => ['symfony', 'zend'],
-                    'audience' => 'zend',
-                ],
-                'extractors' => [
-                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
-                    ['type' => 'query', 'name' => 'token'],
-                    ['type' => 'cookie', 'name' => 'token'],
-                ],
-                'signer' => [
-                    'type' => 'symmetric',
-                    'algorithm' => 'HS256',
-                    'signing_key' => 'secret',
-                    'passphrase' => '',
-                ],
-            ],
-        ], 'jwt');
     }
 
     /**
@@ -315,46 +260,7 @@ class ConfigurationTest extends TestCase
     /**
      * @test
      */
-    public function it_processes_jwt_config()
-    {
-        $filename = tempnam(sys_get_temp_dir(), 'key_');
-
-        $config = [
-            'jwt' => [
-                'signer' => [
-                    'type' => 'asymmetric',
-                    'signing_key' => $filename,
-                    'verification_key' => $filename,
-                ],
-            ],
-        ];
-
-        $this->assertProcessedConfigurationEquals([$config], [
-            'jwt' => [
-                'enabled' => true,
-                'builder' => [
-                    'ttl' => 3600,
-                ],
-                'extractors' => [
-                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
-                ],
-                'signer' => [
-                    'type' => 'asymmetric',
-                    'algorithm' => 'RS256',
-                    'signing_key' => 'file://' . $filename,
-                    'verification_key' => 'file://' . $filename,
-                    'passphrase' => '',
-                ],
-            ],
-        ], 'jwt');
-
-        unlink($filename);
-    }
-
-    /**
-     * @test
-     */
-    public function it_processes_minimal_jwt_config()
+    public function it_processes_simplified_jwt_config()
     {
         $config = [
             'jwt' => 'secret',
@@ -382,26 +288,68 @@ class ConfigurationTest extends TestCase
     /**
      * @test
      */
-    public function it_processes_exceptions_config()
+    public function it_configures_jwt()
     {
+        $filename = tempnam(sys_get_temp_dir(), 'key_');
+
         $config = [
-            'format_exceptions' => [
-                'base_url' => '/api',
+            'jwt' => [
+                'builder' => [
+                    'issuer' => 'damax-api-auth-bundle',
+                    'audience' => 'symfony',
+                    'ttl' => 600,
+                ],
+                'parser' => [
+                    'issuers' => ['symfony', 'zend'],
+                    'audience' => 'zend',
+                ],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
+                    ['type' => 'query', 'name' => 'token'],
+                    ['type' => 'cookie', 'name' => 'token'],
+                ],
+                'signer' => [
+                    'type' => 'asymmetric',
+                    'signing_key' => $filename,
+                    'verification_key' => $filename,
+                ],
             ],
         ];
 
         $this->assertProcessedConfigurationEquals([$config], [
-            'format_exceptions' => [
+            'jwt' => [
                 'enabled' => true,
-                'base_url' => '/api',
+                'builder' => [
+                    'issuer' => 'damax-api-auth-bundle',
+                    'audience' => 'symfony',
+                    'ttl' => 600,
+                ],
+                'parser' => [
+                    'issuers' => ['symfony', 'zend'],
+                    'audience' => 'zend',
+                ],
+                'extractors' => [
+                    ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Bearer'],
+                    ['type' => 'query', 'name' => 'token'],
+                    ['type' => 'cookie', 'name' => 'token'],
+                ],
+                'signer' => [
+                    'type' => 'asymmetric',
+                    'algorithm' => 'RS256',
+                    'signing_key' => 'file://' . $filename,
+                    'verification_key' => 'file://' . $filename,
+                    'passphrase' => '',
+                ],
             ],
-        ], 'format_exceptions');
+        ], 'jwt');
+
+        unlink($filename);
     }
 
     /**
      * @test
      */
-    public function it_processes_minimal_exceptions_config()
+    public function it_processes_simplified_exceptions_config()
     {
         $config = [
             'format_exceptions' => '/api',
@@ -410,7 +358,26 @@ class ConfigurationTest extends TestCase
         $this->assertProcessedConfigurationEquals([$config], [
             'format_exceptions' => [
                 'enabled' => true,
-                'base_url' => '/api',
+                'path' => '/api',
+            ],
+        ], 'format_exceptions');
+    }
+
+    /**
+     * @test
+     */
+    public function it_configures_exceptions_formatting()
+    {
+        $config = [
+            'format_exceptions' => [
+                'path' => '/api',
+            ],
+        ];
+
+        $this->assertProcessedConfigurationEquals([$config], [
+            'format_exceptions' => [
+                'enabled' => true,
+                'path' => '/api',
             ],
         ], 'format_exceptions');
     }

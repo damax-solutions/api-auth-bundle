@@ -18,7 +18,6 @@ use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
 use Damax\Bundle\ApiAuthBundle\Key\Generator\Generator;
 use Damax\Bundle\ApiAuthBundle\Key\Generator\RandomGenerator;
 use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
-use Damax\Bundle\ApiAuthBundle\Request\RequestMatcher;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
@@ -26,6 +25,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
@@ -75,39 +75,6 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         // Cookie
         $this->assertEquals(CookieExtractor::class, $definitions[2]->getClass());
         $this->assertEquals('api_key', $definitions[2]->getArgument(0));
-    }
-
-    /**
-     * @test
-     */
-    public function it_registers_exception_formatting()
-    {
-        $this->load([
-            'format_exceptions' => '/api',
-        ]);
-
-        $this->assertContainerBuilderHasServiceDefinitionWithTag(ExceptionListener::class, 'kernel.event_listener', [
-            'event' => KernelEvents::EXCEPTION,
-            'method' => 'onKernelException',
-        ]);
-
-        /** @var Definition $requestMatcher */
-        $requestMatcher = $this->container
-            ->getDefinition(ExceptionListener::class)
-            ->getArgument(1)
-        ;
-        $this->assertEquals(RequestMatcher::class, $requestMatcher->getClass());
-        $this->assertEquals('/api', $requestMatcher->getArgument(0));
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_register_exception_formatting()
-    {
-        $this->load(['format_exceptions' => false]);
-
-        $this->assertContainerBuilderNotHasService(ExceptionListener::class);
     }
 
     /**
@@ -191,6 +158,35 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithTag(SecurityClaims::class, 'damax.api_auth.jwt_claims');
 
         unlink($key);
+    }
+
+    /**
+     * @test
+     */
+    public function it_skips_exception_listener_registration()
+    {
+        $this->load(['format_exceptions' => false]);
+
+        $this->assertContainerBuilderNotHasService(ExceptionListener::class);
+    }
+
+    /**
+     * @test
+     */
+    public function it_registers_exception_listener()
+    {
+        $this->load(['format_exceptions' => '^/api/']);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(ExceptionListener::class, 'kernel.event_listener', [
+            'event' => KernelEvents::EXCEPTION,
+            'method' => 'onKernelException',
+        ]);
+
+        /** @var Definition $matcher */
+        $matcher = $this->container->getDefinition(ExceptionListener::class)->getArgument(1);
+
+        $this->assertEquals(RequestMatcher::class, $matcher->getClass());
+        $this->assertEquals('^/api/', $matcher->getArgument(0));
     }
 
     protected function getContainerExtensions(): array
