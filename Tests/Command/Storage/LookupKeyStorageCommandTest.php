@@ -6,7 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Command\Storage;
 
 use Damax\Bundle\ApiAuthBundle\Command\Storage\LookupKeyCommand;
 use Damax\Bundle\ApiAuthBundle\Key\Key;
-use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFoundException;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFound;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Storage;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Command\Command;
@@ -67,7 +67,7 @@ CONSOLE;
             ->expects($this->once())
             ->method('get')
             ->with('XYZ')
-            ->willThrowException(new KeyNotFoundException())
+            ->willThrowException(new KeyNotFound())
         ;
 
         $code = $this->tester->execute(['command' => 'damax:api-auth:storage:lookup-key', 'key' => 'XYZ']);

@@ -21,13 +21,10 @@ final class RedisStorage implements Storage
         return (bool) $this->client->exists($key);
     }
 
-    /**
-     * @throws KeyNotFoundException
-     */
     public function get(string $key): Key
     {
         if (null === $identity = $this->client->get($key)) {
-            throw new KeyNotFoundException();
+            throw new KeyNotFound();
         }
 
         return new Key($key, $identity, $this->client->ttl($key));

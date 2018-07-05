@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Security\ApiKey;
 
-use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFoundException;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFound;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Reader as Storage;
 use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -33,12 +33,12 @@ class StorageUserProvider implements ApiKeyUserProvider
     {
         try {
             $key = $this->storage->get($apiKey);
-        } catch (KeyNotFoundException $e) {
-            throw new InvalidApiKeyException();
+        } catch (KeyNotFound $e) {
+            throw new InvalidApiKey();
         }
 
         if ($key->expired()) {
-            throw new InvalidApiKeyException();
+            throw new InvalidApiKey();
         }
 
         return $this->loadUserByUsername($key->identity());

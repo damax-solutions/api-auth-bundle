@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Command\Storage;
 
-use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFoundException;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFound;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Reader as Storage;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -39,7 +39,7 @@ final class LookupKeyCommand extends Command
 
         try {
             $key = $this->storage->get($input->getArgument('key'));
-        } catch (KeyNotFoundException $e) {
+        } catch (KeyNotFound $e) {
             $io->error('Key not found.');
 
             return 1;

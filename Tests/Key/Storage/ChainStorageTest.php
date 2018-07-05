@@ -6,7 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Key\Storage;
 
 use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\FixedStorage;
-use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFoundException;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFound;
 use PHPUnit\Framework\TestCase;
 
 class ChainStorageTest extends TestCase
@@ -57,7 +57,7 @@ class ChainStorageTest extends TestCase
      */
     public function it_throws_exception_when_retrieving_missing_key()
     {
-        $this->expectException(KeyNotFoundException::class);
+        $this->expectException(KeyNotFound::class);
 
         $this->storage->get('123');
     }

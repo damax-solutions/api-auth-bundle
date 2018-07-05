@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Tests\Security\ApiKey;
 
-use Damax\Bundle\ApiAuthBundle\Security\ApiKey\InvalidApiKeyException;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\InvalidApiKey;
 use PHPUnit\Framework\TestCase;
 
 class InvalidApiKeyExceptionTest extends TestCase
@@ -14,6 +14,6 @@ class InvalidApiKeyExceptionTest extends TestCase
      */
     public function it_verifies_message_key()
     {
-        $this->assertEquals('Invalid api key.', (new InvalidApiKeyException())->getMessageKey());
+        $this->assertEquals('Invalid api key.', (new InvalidApiKey())->getMessageKey());
     }
 }

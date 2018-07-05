@@ -6,7 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Security\ApiKey;
 
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-class InvalidApiKeyException extends AuthenticationException
+class InvalidApiKey extends AuthenticationException
 {
     public function getMessageKey(): string
     {

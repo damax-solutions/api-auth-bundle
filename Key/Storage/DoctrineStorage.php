@@ -59,7 +59,7 @@ final class DoctrineStorage implements Storage
         $sql = sprintf('SELECT %s FROM %s WHERE %s = ?', $fields, $this->tableName, $this->fields[self::FIELD_KEY]);
 
         if (false === $row = $this->db->executeQuery($sql, [$key])->fetch(FetchMode::ASSOCIATIVE)) {
-            throw new KeyNotFoundException();
+            throw new KeyNotFound();
         }
 
         return new Key($key, $row[$this->fields[self::FIELD_IDENTITY]], $row[$this->fields[self::FIELD_TTL]] - time());

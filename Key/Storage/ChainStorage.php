@@ -36,9 +36,6 @@ final class ChainStorage implements Reader
         return false;
     }
 
-    /**
-     * @throws KeyNotFoundException
-     */
     public function get(string $key): Key
     {
         foreach ($this->items as $storage) {
@@ -47,6 +44,6 @@ final class ChainStorage implements Reader
             }
         }
 
-        throw new KeyNotFoundException();
+        throw new KeyNotFound();
     }
 }

@@ -11,7 +11,7 @@ interface Reader
     public function has(string $key): bool;
 
     /**
-     * @throws KeyNotFoundException
+     * @throws KeyNotFound
      */
     public function get(string $key): Key;
 }

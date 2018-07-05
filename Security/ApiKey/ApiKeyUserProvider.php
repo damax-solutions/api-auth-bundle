@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 interface ApiKeyUserProvider extends UserProviderInterface
 {
     /**
-     * @throws InvalidApiKeyException
+     * @throws InvalidApiKey
      */
     public function loadUserByApiKey(string $apiKey): UserInterface;
 }

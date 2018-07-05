@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Tests\Key\Storage;
 
 use Damax\Bundle\ApiAuthBundle\Key\Key;
-use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFoundException;
+use Damax\Bundle\ApiAuthBundle\Key\Storage\KeyNotFound;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\RedisStorage;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -107,7 +107,7 @@ class RedisStorageTest extends TestCase
             ->with('get', ['XYZ'])
         ;
 
-        $this->expectException(KeyNotFoundException::class);
+        $this->expectException(KeyNotFound::class);
 
         $this->storage->get('XYZ');
     }
