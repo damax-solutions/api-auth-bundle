@@ -7,7 +7,7 @@ namespace Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class ClaimsCollector implements Claims
+final class ClaimsCollector implements Claims
 {
     private $items = [];
 

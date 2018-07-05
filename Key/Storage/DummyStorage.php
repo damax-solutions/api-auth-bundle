@@ -9,7 +9,7 @@ use Damax\Bundle\ApiAuthBundle\Key\Key;
 /**
  * @codeCoverageIgnore
  */
-class DummyStorage implements Writer
+final class DummyStorage implements Writer
 {
     public function add(Key $key): void
     {

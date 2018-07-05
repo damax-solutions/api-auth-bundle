@@ -7,7 +7,7 @@ namespace Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class FixedClaims implements Claims
+final class FixedClaims implements Claims
 {
     private $claims;
 

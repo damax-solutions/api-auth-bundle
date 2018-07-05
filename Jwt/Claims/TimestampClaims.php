@@ -8,7 +8,7 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Lcobucci\Clock\Clock;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class TimestampClaims implements Claims
+final class TimestampClaims implements Claims
 {
     private $clock;
     private $ttl;

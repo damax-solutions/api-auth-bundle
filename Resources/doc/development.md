@@ -15,12 +15,13 @@ $ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle composer install
 Fix php coding standards:
 
 ```bash
-$ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle ./vendor/bin/php-cs-fixer fix
+$ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle composer cs
 ```
 
 Running tests:
 
 ```bash
-$ docker run --rm -v $(pwd):/app -w /app -e SYMFONY_PHPUNIT_VERSION=6.5 damax-api-auth-bundle ./vendor/bin/simple-phpunit
-$ docker run --rm -v $(pwd):/app -w /app -e SYMFONY_PHPUNIT_VERSION=6.5 damax-api-auth-bundle ./bin/phpunit-coverage
+$ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle composer test
+$ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle composer test-cc
 ```
+``

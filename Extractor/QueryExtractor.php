@@ -6,7 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Extractor;
 
 use Symfony\Component\HttpFoundation\Request;
 
-class QueryExtractor implements Extractor
+final class QueryExtractor implements Extractor
 {
     private $name;
 

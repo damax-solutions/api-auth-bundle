@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Controller;
 
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -23,8 +22,7 @@ class TokenController
     }
 
     /**
-     * @Method("GET")
-     * @Route("/refresh-token")
+     * @Route("/refresh-token", methods={"GET"})
      *
      * @throws UnauthorizedHttpException
      */

@@ -6,7 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Extractor;
 
 use Symfony\Component\HttpFoundation\Request;
 
-class ChainExtractor implements Extractor
+final class ChainExtractor implements Extractor
 {
     /**
      * @var Extractor[]

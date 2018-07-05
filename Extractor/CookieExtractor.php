@@ -6,7 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Extractor;
 
 use Symfony\Component\HttpFoundation\Request;
 
-class CookieExtractor implements Extractor
+final class CookieExtractor implements Extractor
 {
     private $name;
 

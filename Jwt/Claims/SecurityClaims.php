@@ -8,7 +8,7 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class SecurityClaims implements Claims
+final class SecurityClaims implements Claims
 {
     public function resolve(UserInterface $user): array
     {
