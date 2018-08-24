@@ -13,3 +13,5 @@ RUN apt-get update && apt-get install -y git && rm -r /var/lib/apt/lists/*
 RUN cd /usr/local/bin \
     && php -r "readfile('https://getcomposer.org/installer');" | php \
     && mv composer.phar composer
+
+ENV SYMFONY_PHPUNIT_VERSION=6.5
