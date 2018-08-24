@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\Tests\DependencyInjection;
 
+use Damax\Bundle\ApiAuthBundle\Command\Storage\AddKeyCommand;
+use Damax\Bundle\ApiAuthBundle\Command\Storage\LookupKeyCommand;
+use Damax\Bundle\ApiAuthBundle\Command\Storage\RemoveKeyCommand;
 use Damax\Bundle\ApiAuthBundle\DependencyInjection\DamaxApiAuthExtension;
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\CookieExtractor;
@@ -62,6 +65,11 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
             ->getArgument(0)
         ;
         $this->assertEquals(ChainExtractor::class, $extractors->getClass());
+
+        // Console
+        $this->assertContainerBuilderHasService(AddKeyCommand::class);
+        $this->assertContainerBuilderHasService(RemoveKeyCommand::class);
+        $this->assertContainerBuilderHasService(LookupKeyCommand::class);
     }
 
     /**
@@ -151,6 +159,11 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         $this->load(['format_exceptions' => false]);
 
         $this->assertContainerBuilderNotHasService(ExceptionListener::class);
+
+        // Console
+        $this->assertContainerBuilderNotHasService(AddKeyCommand::class);
+        $this->assertContainerBuilderNotHasService(RemoveKeyCommand::class);
+        $this->assertContainerBuilderNotHasService(LookupKeyCommand::class);
     }
 
     /**

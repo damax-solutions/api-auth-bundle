@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\DependencyInjection;
 
+use Damax\Bundle\ApiAuthBundle\Command\Storage\AddKeyCommand;
+use Damax\Bundle\ApiAuthBundle\Command\Storage\LookupKeyCommand;
+use Damax\Bundle\ApiAuthBundle\Command\Storage\RemoveKeyCommand;
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims\ClaimsCollector;
@@ -239,6 +242,10 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
             ->register(Reader::class, ChainStorage::class)
             ->addArgument($drivers)
         ;
+
+        $container->autowire(AddKeyCommand::class);
+        $container->autowire(LookupKeyCommand::class);
+        $container->autowire(RemoveKeyCommand::class);
 
         return $this;
     }
