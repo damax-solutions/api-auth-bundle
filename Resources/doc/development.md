@@ -24,4 +24,3 @@ Running tests:
 $ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle composer test
 $ docker run --rm -v $(pwd):/app -w /app damax-api-auth-bundle composer test-cc
 ```
-``
