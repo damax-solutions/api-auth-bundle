@@ -66,9 +66,9 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         $this->assertEquals(ChainExtractor::class, $extractors->getClass());
 
         // Console
-        $this->assertContainerBuilderHasService(AddKeyCommand::class);
-        $this->assertContainerBuilderHasService(RemoveKeyCommand::class);
-        $this->assertContainerBuilderHasService(LookupKeyCommand::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(AddKeyCommand::class, 'console.command');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(RemoveKeyCommand::class, 'console.command');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(LookupKeyCommand::class, 'console.command');
     }
 
     /**

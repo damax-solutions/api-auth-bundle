@@ -230,9 +230,18 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
             ->addArgument($drivers)
         ;
 
-        $container->autowire(AddKeyCommand::class);
-        $container->autowire(LookupKeyCommand::class);
-        $container->autowire(RemoveKeyCommand::class);
+        $container
+            ->autowire(AddKeyCommand::class)
+            ->addTag('console.command')
+        ;
+        $container
+            ->autowire(LookupKeyCommand::class)
+            ->addTag('console.command')
+        ;
+        $container
+            ->autowire(RemoveKeyCommand::class)
+            ->addTag('console.command')
+        ;
 
         return $this;
     }
