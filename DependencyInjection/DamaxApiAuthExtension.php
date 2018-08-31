@@ -16,6 +16,7 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Claims\TimestampClaims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Builder;
 use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
+use Damax\Bundle\ApiAuthBundle\Key\Factory;
 use Damax\Bundle\ApiAuthBundle\Key\Generator\Generator;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\DoctrineStorage;
@@ -73,6 +74,9 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
             ->register(Generator::class)
             ->setClass(sprintf('Damax\\Bundle\\ApiAuthBundle\\Key\\Generator\\%sGenerator', ucfirst($config['generator'])))
         ;
+
+        // Key factory.
+        $container->autowire(Factory::class);
 
         return $this->configureKeyStorage($config['storage'], $container);
     }

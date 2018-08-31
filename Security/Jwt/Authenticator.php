@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class Authenticator extends AbstractAuthenticator
+final class Authenticator extends AbstractAuthenticator
 {
     private $tokenParser;
     private $identityClaim;

@@ -8,7 +8,7 @@ use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class Authenticator extends AbstractAuthenticator
+final class Authenticator extends AbstractAuthenticator
 {
     public function getUser($credentials, UserProviderInterface $provider): UserInterface
     {
