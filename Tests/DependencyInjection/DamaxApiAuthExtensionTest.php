@@ -7,6 +7,7 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\DependencyInjection;
 use Damax\Bundle\ApiAuthBundle\Command\Storage\AddKeyCommand;
 use Damax\Bundle\ApiAuthBundle\Command\Storage\LookupKeyCommand;
 use Damax\Bundle\ApiAuthBundle\Command\Storage\RemoveKeyCommand;
+use Damax\Bundle\ApiAuthBundle\Controller\TokenController;
 use Damax\Bundle\ApiAuthBundle\DependencyInjection\DamaxApiAuthExtension;
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
 use Damax\Bundle\ApiAuthBundle\Extractor\CookieExtractor;
@@ -227,6 +228,9 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithTag(OrganizationClaims::class, 'damax.api_auth.jwt_claims');
         $this->assertContainerBuilderHasService(SecurityClaims::class);
         $this->assertContainerBuilderHasServiceDefinitionWithTag(SecurityClaims::class, 'damax.api_auth.jwt_claims');
+
+        // Controller
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(TokenController::class, 'controller.service_arguments');
 
         unlink($key);
     }

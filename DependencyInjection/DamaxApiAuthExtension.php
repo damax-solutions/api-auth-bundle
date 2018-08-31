@@ -7,6 +7,7 @@ namespace Damax\Bundle\ApiAuthBundle\DependencyInjection;
 use Damax\Bundle\ApiAuthBundle\Command\Storage\AddKeyCommand;
 use Damax\Bundle\ApiAuthBundle\Command\Storage\LookupKeyCommand;
 use Damax\Bundle\ApiAuthBundle\Command\Storage\RemoveKeyCommand;
+use Damax\Bundle\ApiAuthBundle\Controller\TokenController;
 use Damax\Bundle\ApiAuthBundle\Extractor\ChainExtractor;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims\ClaimsCollector;
@@ -32,11 +33,9 @@ use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfiguration;
 use Lcobucci\JWT\Signer\Key;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
@@ -44,9 +43,6 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
 {
     protected function loadInternal(array $config, ContainerBuilder $container)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.xml');
-
         if ($config['api_key']['enabled']) {
             $this->configureApiKey($config['api_key'], $container);
         }
@@ -132,6 +128,12 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
 
         // Handler.
         $container->autowire('damax.api_auth.jwt.handler', AuthenticationHandler::class);
+
+        // Controller
+        $container
+            ->autowire(TokenController::class)
+            ->addTag('controller.service_arguments')
+        ;
 
         return $this;
     }

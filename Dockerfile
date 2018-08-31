@@ -1,6 +1,6 @@
 FROM php:7.1-cli
 
-LABEL maintainer="dmitri@devmachine.net"
+LABEL maintainer="d@dmitri.io"
 
 # zip
 RUN apt-get update && apt-get install -y zlib1g-dev \
