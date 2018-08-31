@@ -26,7 +26,7 @@ class ConfigurationTest extends TestCase
                 'extractors' => [
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
                 ],
-                'generator' => 'random',
+                'generator' => ['key_size' => 20],
                 'storage' => [],
             ],
             'jwt' => [
@@ -58,7 +58,7 @@ class ConfigurationTest extends TestCase
                 'extractors' => [
                     ['type' => 'header', 'name' => 'Authorization', 'prefix' => 'Token'],
                 ],
-                'generator' => 'random',
+                'generator' => ['key_size' => 20],
                 'storage' => [
                     [
                         'type' => 'fixed',
@@ -85,7 +85,7 @@ class ConfigurationTest extends TestCase
                     ['type' => 'query', 'name' => 'api_key'],
                     ['type' => 'cookie', 'name' => 'api_key'],
                 ],
-                'generator' => 'fixed',
+                'generator' => ['key_size' => 40],
                 'storage' => [
                     [
                         'type' => 'fixed',
@@ -116,7 +116,7 @@ class ConfigurationTest extends TestCase
                     ['type' => 'query', 'name' => 'api_key'],
                     ['type' => 'cookie', 'name' => 'api_key'],
                 ],
-                'generator' => 'fixed',
+                'generator' => ['key_size' => 40],
                 'storage' => [
                     [
                         'type' => 'fixed',

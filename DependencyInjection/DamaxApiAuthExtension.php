@@ -19,6 +19,7 @@ use Damax\Bundle\ApiAuthBundle\Jwt\Lcobucci\Parser;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
 use Damax\Bundle\ApiAuthBundle\Key\Factory;
 use Damax\Bundle\ApiAuthBundle\Key\Generator\Generator;
+use Damax\Bundle\ApiAuthBundle\Key\Generator\RandomGenerator;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\ChainStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\DoctrineStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\DummyStorage;
@@ -65,10 +66,9 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
             ->addArgument($extractors)
         ;
 
-        // Key generator.
         $container
-            ->register(Generator::class)
-            ->setClass(sprintf('Damax\\Bundle\\ApiAuthBundle\\Key\\Generator\\%sGenerator', ucfirst($config['generator'])))
+            ->register(Generator::class, RandomGenerator::class)
+            ->addArgument($config['generator']['key_size'])
         ;
 
         // Key factory.

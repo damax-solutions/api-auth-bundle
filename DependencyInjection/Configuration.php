@@ -50,9 +50,13 @@ final class Configuration implements ConfigurationInterface
                     ],
                 ]))
 
-                ->enumNode('generator')
-                    ->values(['fixed', 'random'])
-                    ->defaultValue('random')
+                ->arrayNode('generator')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->integerNode('key_size')
+                            ->defaultValue(20)
+                        ->end()
+                    ->end()
                 ->end()
 
                 ->arrayNode('storage')

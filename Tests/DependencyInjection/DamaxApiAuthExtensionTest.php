@@ -53,6 +53,7 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         ]);
 
         $this->assertContainerBuilderHasService(Generator::class, RandomGenerator::class);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Generator::class, 0, 20);
         $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', StorageUserProvider::class);
         $this->assertContainerBuilderHasService('damax.api_auth.api_key.authenticator', ApiKeyAuthenticator::class);
         $this->assertContainerBuilderHasService(Reader::class, ChainStorage::class);
@@ -113,6 +114,7 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
     {
         $this->load([
             'api_key' => [
+                'generator' => ['key_size' => 40],
                 'storage' => [
                     [
                         'type' => 'fixed',
@@ -129,6 +131,8 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
                 ],
             ],
         ]);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Generator::class, 0, 40);
 
         /** @var Definition[] $drivers */
         $drivers = $this->container->getDefinition(Reader::class)->getArgument(0);
