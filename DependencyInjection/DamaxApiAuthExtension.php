@@ -24,7 +24,6 @@ use Damax\Bundle\ApiAuthBundle\Key\Storage\InMemoryStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Reader;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\RedisStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Writer;
-use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\AuthenticationHandler;
@@ -38,7 +37,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 final class DamaxApiAuthExtension extends ConfigurableExtension
@@ -54,10 +52,6 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
 
         if ($config['jwt']['enabled']) {
             $this->configureJwt($config['jwt'], $container);
-        }
-
-        if ($config['format_exceptions']['enabled']) {
-            $this->configureExceptions($config['format_exceptions'], $container);
         }
     }
 
@@ -134,19 +128,6 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
 
         // Handler.
         $container->autowire('damax.api_auth.jwt.handler', AuthenticationHandler::class);
-
-        return $this;
-    }
-
-    private function configureExceptions(array $config, ContainerBuilder $container): self
-    {
-        $matcher = (new Definition(RequestMatcher::class))->addArgument($config['path'] ?? null);
-
-        $container
-            ->autowire(ExceptionListener::class)
-            ->setArgument(1, $matcher)
-            ->addTag('kernel.event_listener', ['event' => 'kernel.exception', 'method' => 'onKernelException'])
-        ;
 
         return $this;
     }

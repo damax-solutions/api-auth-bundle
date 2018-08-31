@@ -11,7 +11,7 @@ use Lcobucci\JWT\Configuration as JwtConfiguration;
 use Lcobucci\JWT\Token as JwtToken;
 use Lcobucci\JWT\Validation\Constraint;
 
-class Parser implements TokenParser
+final class Parser implements TokenParser
 {
     /**
      * @var JwtConfiguration

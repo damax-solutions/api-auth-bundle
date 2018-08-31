@@ -9,8 +9,18 @@ use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
 use Lcobucci\JWT\Configuration as JwtConfiguration;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class Builder implements TokenBuilder
+final class Builder implements TokenBuilder
 {
+    private const CLAIM_TO_METHOD = [
+        Claims::SUBJECT => 'relatedTo',
+        Claims::ISSUER => 'issuedBy',
+        Claims::AUDIENCE => 'permittedFor',
+        Claims::ISSUED_AT => 'issuedAt',
+        Claims::NOT_BEFORE => 'canOnlyBeUsedAfter',
+        Claims::EXPIRATION_TIME => 'expiresAt',
+        Claims::ID => 'identifiedBy',
+    ];
+
     private $config;
     private $claims;
 
@@ -25,30 +35,12 @@ class Builder implements TokenBuilder
         $builder = $this->config->createBuilder();
 
         foreach ($this->claims->resolve($user) as $name => $value) {
-            switch ($name) {
-                case Claims::SUBJECT:
-                    $builder->relatedTo($value);
-                    break;
-                case Claims::ISSUER:
-                    $builder->issuedBy($value);
-                    break;
-                case Claims::AUDIENCE:
-                    $builder->permittedFor($value);
-                    break;
-                case Claims::ISSUED_AT:
-                    $builder->issuedAt($value);
-                    break;
-                case Claims::NOT_BEFORE:
-                    $builder->canOnlyBeUsedAfter($value);
-                    break;
-                case Claims::EXPIRATION_TIME:
-                    $builder->expiresAt($value);
-                    break;
-                case Claims::ID:
-                    $builder->identifiedBy($value);
-                    break;
-                default:
-                    $builder->withClaim($name, $value);
+            $method = self::CLAIM_TO_METHOD[$name] ?? null;
+
+            if ($method) {
+                $builder->{$method}($value);
+            } else {
+                $builder->withClaim($name, $value);
             }
         }
 

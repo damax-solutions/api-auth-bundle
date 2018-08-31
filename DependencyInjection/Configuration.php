@@ -31,7 +31,6 @@ final class Configuration implements ConfigurationInterface
             ->children()
                 ->append($this->apiKeyNode('api_key'))
                 ->append($this->jwtNode('jwt'))
-                ->append($this->exceptionsNode('format_exceptions'))
             ->end()
         ;
 
@@ -251,22 +250,6 @@ final class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-            ->end()
-        ;
-    }
-
-    private function exceptionsNode(string $name): ArrayNodeDefinition
-    {
-        return (new ArrayNodeDefinition($name))
-            ->canBeEnabled()
-            ->beforeNormalization()
-                ->ifString()
-                ->then(function (string $config): array {
-                    return ['enabled' => true, 'path' => $config];
-                })
-            ->end()
-            ->children()
-                ->scalarNode('path')->cannotBeEmpty()->end()
             ->end()
         ;
     }

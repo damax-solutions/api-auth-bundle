@@ -25,7 +25,6 @@ use Damax\Bundle\ApiAuthBundle\Key\Storage\DoctrineStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\InMemoryStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Reader;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\RedisStorage;
-use Damax\Bundle\ApiAuthBundle\Listener\ExceptionListener;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
@@ -34,8 +33,6 @@ use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpFoundation\RequestMatcher;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
 {
@@ -149,40 +146,6 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         $this->assertEquals(new Reference('database_connection'), $drivers[2]->getArgument(0));
         $this->assertEquals('api_key', $drivers[2]->getArgument(1));
         $this->assertEquals(['key' => 'id', 'identity' => 'user_id'], $drivers[2]->getArgument(2));
-    }
-
-    /**
-     * @test
-     */
-    public function it_skips_exception_listener_registration()
-    {
-        $this->load(['format_exceptions' => false]);
-
-        $this->assertContainerBuilderNotHasService(ExceptionListener::class);
-
-        // Console
-        $this->assertContainerBuilderNotHasService(AddKeyCommand::class);
-        $this->assertContainerBuilderNotHasService(RemoveKeyCommand::class);
-        $this->assertContainerBuilderNotHasService(LookupKeyCommand::class);
-    }
-
-    /**
-     * @test
-     */
-    public function it_registers_exception_listener()
-    {
-        $this->load(['format_exceptions' => '^/api/']);
-
-        $this->assertContainerBuilderHasServiceDefinitionWithTag(ExceptionListener::class, 'kernel.event_listener', [
-            'event' => KernelEvents::EXCEPTION,
-            'method' => 'onKernelException',
-        ]);
-
-        /** @var Definition $matcher */
-        $matcher = $this->container->getDefinition(ExceptionListener::class)->getArgument(1);
-
-        $this->assertEquals(RequestMatcher::class, $matcher->getClass());
-        $this->assertEquals('^/api/', $matcher->getArgument(0));
     }
 
     /**

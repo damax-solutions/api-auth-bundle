@@ -38,9 +38,6 @@ class ConfigurationTest extends TestCase
                     'ttl' => 3600,
                 ],
             ],
-            'format_exceptions' => [
-                'enabled' => false,
-            ],
         ]);
     }
 
@@ -346,42 +343,6 @@ class ConfigurationTest extends TestCase
         ], 'jwt');
 
         unlink($filename);
-    }
-
-    /**
-     * @test
-     */
-    public function it_processes_simplified_exceptions_config()
-    {
-        $config = [
-            'format_exceptions' => '/api',
-        ];
-
-        $this->assertProcessedConfigurationEquals([$config], [
-            'format_exceptions' => [
-                'enabled' => true,
-                'path' => '/api',
-            ],
-        ], 'format_exceptions');
-    }
-
-    /**
-     * @test
-     */
-    public function it_configures_exceptions_formatting()
-    {
-        $config = [
-            'format_exceptions' => [
-                'path' => '/api',
-            ],
-        ];
-
-        $this->assertProcessedConfigurationEquals([$config], [
-            'format_exceptions' => [
-                'enabled' => true,
-                'path' => '/api',
-            ],
-        ], 'format_exceptions');
     }
 
     protected function getConfiguration(): ConfigurationInterface

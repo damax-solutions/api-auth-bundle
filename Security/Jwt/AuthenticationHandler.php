@@ -10,10 +10,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
-class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
+final class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
     private $builder;
 
@@ -24,7 +26,13 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
     {
-        $jwtString = $this->builder->fromUser($token->getUser());
+        $user = $token->getUser();
+
+        if (!$user instanceof UserInterface) {
+            throw new UnsupportedUserException('User not supported.');
+        }
+
+        $jwtString = $this->builder->fromUser($user);
 
         return JsonResponse::create(['token' => $jwtString]);
     }
