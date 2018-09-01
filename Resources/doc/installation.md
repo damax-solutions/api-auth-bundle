@@ -49,4 +49,4 @@ By default API key or _JWT_ authentication is turned off i.e. no configuration i
 
 ## Next
 
-Read next how to authenticate with [API keys](api-key.md).
+Read next how to [authenticate with API keys](api-key.md).
