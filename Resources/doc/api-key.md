@@ -212,17 +212,13 @@ $ curl -H "X-Auth-Token: secret" https://domain.abc/api/run
 $ curl -H "X-Auth: Token secret" https://domain.abc/api/run
 ```
 
-#### Custom user provider
+## Custom user provider
 
-Implement `Damax\Bundle\ApiAuthBundle\Security\ApiKeyApiKeyUserProvider` interface in your user provider, e.g.
+If you want to store keys in your own way and load custom user implementations, then implement [ApiKeyUserProvider](../../Security/ApiKey/ApiKeyUserProvider.php):
 
 ```php
-<?php
-
-// ...
-
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\ApiKeyUserProvider;
-use Damax\Bundle\ApiAuthBundle\Security\ApiKey\InvalidApiKeyException;
+use Damax\Bundle\ApiAuthBundle\Security\ApiKey\InvalidApiKey;
 
 class UserProvider implements ApiKeyUserProvider
 {
@@ -238,7 +234,7 @@ class UserProvider implements ApiKeyUserProvider
     public function loadUserByApiKey(string $key): UserInterface
     {
         if (null === $user = $this->repository->byApiKey($key)) {
-            throw new InvalidApiKeyException();
+            throw new InvalidApiKey();
         }
 
         return $user;
@@ -246,4 +242,4 @@ class UserProvider implements ApiKeyUserProvider
 }
 ```
 
-Register in container and specify in `security.yml`.
+Register it in container and update `security.yml` accordingly.
