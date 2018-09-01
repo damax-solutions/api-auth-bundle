@@ -10,7 +10,7 @@ use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class StorageUserProvider implements ApiKeyUserProvider
+final class StorageUserProvider implements ApiKeyUserProvider
 {
     private $storage;
 
