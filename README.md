@@ -8,8 +8,8 @@ API key or [JWT](https://jwt.io/) authentication for Symfony application.
 
 #### Api keys
 
-- Store keys in _Redis_, _Doctrine_ or in memory.
-- Lookup in multiple storage types until found.
+- Store keys in _Redis_, database or right in config.
+- Search in multiple storage types until found.
 - Use console commands to add, remove or lookup existing keys.
 - Define _TTL_ for each key i.e. grant temporary access to your API.
 - Configure the chain of key extractors from cookie, query string or header.

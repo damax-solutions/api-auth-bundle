@@ -149,10 +149,10 @@ This will go through all the configured storage types. If found, it returns the 
 
 #### Add or remove
 
-The typical scenario is to store keys in database with caching in _Redis_. Keys in _Redis_ are disposable by their nature when ttl reaches zero. 
+The typical scenario is to store keys in database with caching in _Redis_, where keys disposable by their nature when ttl reaches zero.
 This is an easy way to grant a temporary access to your API without making changes in the database.
 
-That being said, you need to define which storage is writable i.e. add to or remove keys from:
+That being said, you need to define which storage is _writable_ i.e. add to or remove keys from:
 
 ```yaml
 damax_api_auth:
@@ -189,7 +189,7 @@ Example `cURL` command:
 $ curl -H "Authorization: Token secret" https://domain.abc/api/run
 ```
 
-To fine tune extractors to look up for a key in cookie, query or header, consider the following:
+To fine tune extractors to search for a key in cookie, query or header, consider the following:
 
 ```yaml
 damax_api_auth:

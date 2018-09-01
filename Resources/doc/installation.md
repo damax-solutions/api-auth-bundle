@@ -8,7 +8,7 @@ Install with composer:
 $ composer require damax/api-auth-bundle
 ```
 
-If you plan to store API keys with _Doctrine_, then run:
+If you plan to store API keys in database, then run:
 
 ```bash
 $ composer require doctrine/dbal
