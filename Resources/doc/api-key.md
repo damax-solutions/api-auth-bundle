@@ -2,14 +2,14 @@
 
 ## Basics
 
-In most simplest form you can define keys right in the config. This is useful when you collaborate between your own applications or for testing purposes.
+In most simplest form you can define keys right in the config. This is useful when you collaborate between your own applications or for testing purposes:
 
 ```yaml
 damax_api_auth:
     api_key:
         storage:
-           app_one: '%env(API_KEY_APP_ONE)%'
-           app_two: '%env(API_KEY_APP_TWO)%'
+            app_one: '%env(API_KEY_APP_ONE)%'
+            app_two: '%env(API_KEY_APP_TWO)%'
 ```
 
 #### Security
@@ -95,11 +95,11 @@ damax_api_auth:
             - { type: redis, key_prefix: 'api:', redis_client_id: snc_redis.default }
 ```
 
-Lookup using `snc_redis.api_cache` client, if not found, then search for a key with `api:` prefix using `snc_redis.default` client.
+Lookup using `snc_redis.api_cache` client, if not found, then search for a key using `snc_redis.default` client.
 
 #### Database
 
-_Doctrine_ adapter configuration:
+_Doctrine_ storage configuration:
 
 ```yaml
 damax_api_auth:
@@ -110,7 +110,7 @@ damax_api_auth:
               fields: { key: id, identity: user_id, ttl: expires_at }
 ```
 
-`ttl` field must be of type _integer_. Default values for `fields` option are: `key`, `identity` and `ttl`.
+`ttl` field must be of type _integer_. Default `fields` values are: `key`, `identity` and `ttl`.
 
 #### All in one
 
@@ -125,7 +125,6 @@ damax_api_auth:
                   app_one: '%env(API_KEY_APP_ONE)%'
                   app_two: '%env(API_KEY_APP_TWO)%'
             - type: redis
-              redis_client_id: snc_redis.default
               key_prefix: 'api:'
             - type: doctrine
               table_name: user_api_key
@@ -150,30 +149,21 @@ This will go through all the configured storage types. If found, it returns the 
 
 #### Add or remove
 
-As you know by now, multiple storage types are configurable at once. The typical scenario is to store keys in database
-with caching in _Redis_ i.e. achieving durability of _RDBMS_ and fast memory access of key value storage.
+The typical scenario is to store keys in database with caching in _Redis_. Keys in _Redis_ are disposable by their nature when ttl reaches zero. 
+This is an easy way to grant a temporary access to your API without making changes in the database.
 
-_Redis_ keys are disposable by their nature when ttl reaches zero. This is an easy way to grant a temporary access
-to your API without making changes in the database.
-
-That being said, you need to define which storage is writable i.e. add to or remove keys from.
-
-As guessed by now the _Redis_ is an obvious choice for our setup:
+That being said, you need to define which storage is writable i.e. add to or remove keys from:
 
 ```yaml
 damax_api_auth:
     api_key:
         storage:
-            - type: redis
-              redis_client_id: snc_redis.default
-              key_prefix: 'api:'
-              writable: true
-            - type: doctrine
-              table_name: user_api_key
-              fields: { key: id, identity: user_id, ttl: expires_at }
+            # ...
+            - { type: redis, key_prefix: 'api:', writable: true }
+            # ...
 ```
 
-To add new key, please run:
+To add a new key, please run:
 
 ```bash
 $ ./bin/console damax:api-auth:storage:add-key john.doe@domain.abc 2hours
@@ -187,7 +177,7 @@ To remove a key:
 $ ./bin/console damax:api-auth:storage:remove-key <key>
 ```
 
-Console commands support only one _writable_ storage. `fixed` type can not be writable.
+Only one _writable_ storage can be defined. `fixed` type can not be writable.
 
 ## Extractors
 
