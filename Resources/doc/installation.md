@@ -1,27 +1,52 @@
 # Installation
 
-Add `damax/api-auth-bundle` to your `composer.json`:
+## Composer
+
+Install with composer:
 
 ```bash
-$ composer require lcobucci/jwt:4.*@dev damax/api-auth-bundle
+$ composer require damax/api-auth-bundle
 ```
 
-__Note__: The library [lcobucci/jwt](https://github.com/lcobucci/jwt) will be installed automatically as soon as new stable version is released.
+If you plan to store api keys with _Doctrine_, then run:
 
-Register bundle in the kernel (for pre _Symfony 4.0_ applications):
+```bash
+$ composer require doctrine/dbal
+```
+
+In case of _Redis_:
+
+```bash
+$ composer require predis/predis # snc/redis-bundle - not required, but recommended.
+```
+
+If you need _JWT_ authentication, then run:
+
+```bash
+$ composer require lcobucci/jwt:4.*@dev # Latest 4.x version is required.
+```
+
+__Note__: In future releases different _JWT_ providers will be supported.
+
+## Bundles
+
+With introduction of _symfony/flex_ you don't have to worry about enabling relevant bundles, but make sure below is present in your configuration.
 
 ```php
-<?php
-// app/AppKernel.php
+// Symfony v4.0 example, but v3.x is also supported.
+Damax\Bundle\ApiAuthBundle\DamaxApiAuthBundle::class => ['all' => true],
 
-public function registerBundles()
-{
-    $bundles = [
-        // ...
+// For Doctrine
+Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],
 
-        new Damax\Bundle\ApiAuthBundle\DamaxApiAuthBundle(),
-    ];
-}
+// For Redis
+Snc\RedisBundle\SncRedisBundle::class => ['all' => true],
 ```
 
-__Note__: This step is not required if you use [symfony/flex](https://github.com/symfony/flex).
+## Configuration
+
+By default API key or _JWT_ authentication is turned off i.e. no configuration is needed right from the start.
+
+## Next
+
+Read next how to authenticate with [API keys](api-key.md).
