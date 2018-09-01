@@ -177,7 +177,7 @@ To remove a key:
 $ ./bin/console damax:api-auth:storage:remove-key <key>
 ```
 
-Only one _writable_ storage can be defined. `fixed` type can not be writable.
+Only one _writable_ storage can be defined. `fixed` type can not be _writable_.
 
 ## Extractors
 
@@ -189,14 +189,11 @@ Example `cURL` command:
 $ curl -H "Authorization: Token secret" https://domain.abc/api/run
 ```
 
-To fine tune extractors to look up for a key in cookie, query and/or header, consider the following:
+To fine tune extractors to look up for a key in cookie, query or header, consider the following:
 
 ```yaml
 damax_api_auth:
     api_key:
-        storage:
-            app_one: '%env(API_TOKEN_APP_ONE)%'
-            app_two: '%env(API_TOKEN_APP_TWO)%'
         extractors:
             - { type: query, name: api_key }
             - { type: query, name: apikey }
