@@ -29,8 +29,10 @@ use Damax\Bundle\ApiAuthBundle\Key\Storage\RedisStorage;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\Writer;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\JsonResponseFactory;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\AuthenticationHandler;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ResponseFactory;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration as JwtConfiguration;
 use Lcobucci\JWT\Signer\Key;
@@ -44,6 +46,8 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
 {
     protected function loadInternal(array $config, ContainerBuilder $container)
     {
+        $container->register(ResponseFactory::class, JsonResponseFactory::class);
+
         if ($config['api_key']['enabled']) {
             $this->configureApiKey($config['api_key'], $container);
         }
@@ -64,6 +68,7 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
         $container
             ->register('damax.api_auth.api_key.authenticator', ApiKeyAuthenticator::class)
             ->addArgument($extractors)
+            ->addArgument(new Reference(ResponseFactory::class))
         ;
 
         $container
@@ -122,6 +127,7 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
         $container
             ->register('damax.api_auth.jwt.authenticator', JwtAuthenticator::class)
             ->addArgument($extractors)
+            ->addArgument(new Reference(ResponseFactory::class))
             ->addArgument($parser)
             ->addArgument($config['identity_claim'] ?? null)
         ;

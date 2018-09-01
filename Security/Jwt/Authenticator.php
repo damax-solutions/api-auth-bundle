@@ -8,6 +8,7 @@ use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenParser;
 use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ResponseFactory;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -17,9 +18,9 @@ final class Authenticator extends AbstractAuthenticator
     private $tokenParser;
     private $identityClaim;
 
-    public function __construct(Extractor $extractor, TokenParser $tokenParser, string $identityClaim = null)
+    public function __construct(Extractor $extractor, ResponseFactory $response, TokenParser $tokenParser, string $identityClaim = null)
     {
-        parent::__construct($extractor);
+        parent::__construct($extractor, $response);
 
         $this->tokenParser = $tokenParser;
         $this->identityClaim = $identityClaim;

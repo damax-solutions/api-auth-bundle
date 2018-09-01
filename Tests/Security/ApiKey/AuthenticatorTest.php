@@ -9,6 +9,7 @@ use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\ApiKeyUserProvider;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiUser;
+use Damax\Bundle\ApiAuthBundle\Security\ResponseFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -26,7 +27,10 @@ class AuthenticatorTest extends TestCase
         /** @var Extractor $extractor */
         $extractor = $this->createMock(Extractor::class);
 
-        $this->authenticator = new Authenticator($extractor);
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->createMock(ResponseFactory::class);
+
+        $this->authenticator = new Authenticator($extractor, $responseFactory);
     }
 
     /**

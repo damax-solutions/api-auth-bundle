@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Tests\Security\Jwt;
 
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
+use Damax\Bundle\ApiAuthBundle\Security\JsonResponseFactory;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\AuthenticationHandler;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +30,7 @@ class AuthenticationHandlerTest extends TestCase
     protected function setUp()
     {
         $this->builder = $this->createMock(TokenBuilder::class);
-        $this->handler = new AuthenticationHandler($this->builder);
+        $this->handler = new AuthenticationHandler($this->builder, new JsonResponseFactory());
     }
 
     /**
@@ -71,6 +72,6 @@ class AuthenticationHandlerTest extends TestCase
         $response = $this->handler->onAuthenticationFailure(new Request(), new AuthenticationException('Invalid username.'));
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals(json_encode(['message' => 'Invalid username.']), $response->getContent());
+        $this->assertEquals(json_encode(['error' => ['code' => 401, 'message' => 'Unauthorized']]), $response->getContent());
     }
 }

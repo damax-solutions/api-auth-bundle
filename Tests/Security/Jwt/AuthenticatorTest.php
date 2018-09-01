@@ -8,6 +8,7 @@ use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Jwt\Token;
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenParser;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ResponseFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -27,15 +28,18 @@ class AuthenticatorTest extends TestCase
     private $tokenParser;
 
     /**
-     * @var JwtAuthenticator
+     * @var Authenticator
      */
     private $authenticator;
 
     protected function setUp()
     {
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->createMock(ResponseFactory::class);
+
         $this->extractor = $this->createMock(Extractor::class);
         $this->tokenParser = $this->createMock(TokenParser::class);
-        $this->authenticator = new Authenticator($this->extractor, $this->tokenParser, 'username');
+        $this->authenticator = new Authenticator($this->extractor, $responseFactory, $this->tokenParser, 'username');
     }
 
     /**
@@ -107,7 +111,10 @@ class AuthenticatorTest extends TestCase
             ->willReturn($user)
         ;
 
-        $this->assertSame($user, (new Authenticator($this->extractor, $this->tokenParser))->getUser('ABC', $userProvider));
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->createMock(ResponseFactory::class);
+
+        $this->assertSame($user, (new Authenticator($this->extractor, $responseFactory, $this->tokenParser))->getUser('ABC', $userProvider));
     }
 
     /**

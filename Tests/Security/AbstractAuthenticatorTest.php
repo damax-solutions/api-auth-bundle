@@ -6,6 +6,7 @@ namespace Damax\Bundle\ApiAuthBundle\Tests\Security;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
 use Damax\Bundle\ApiAuthBundle\Security\AbstractAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\JsonResponseFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,7 +37,7 @@ class AbstractAuthenticatorTest extends TestCase
     {
         $this->request = new Request();
         $this->extractor = $extractor = $this->createMock(Extractor::class);
-        $this->authenticator = new class($extractor) extends AbstractAuthenticator {
+        $this->authenticator = new class($extractor, new JsonResponseFactory()) extends AbstractAuthenticator {
             public function getUser($credentials, UserProviderInterface $userProvider)
             {
             }
@@ -81,7 +82,7 @@ class AbstractAuthenticatorTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals('{"message":"Unauthorized"}', $response->getContent());
+        $this->assertEquals('{"error":{"code":401,"message":"Unauthorized"}}', $response->getContent());
     }
 
     /**
@@ -129,7 +130,7 @@ class AbstractAuthenticatorTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertEquals('{"message":"Forbidden"}', $response->getContent());
+        $this->assertEquals('{"error":{"code":403,"message":"Forbidden"}}', $response->getContent());
     }
 
     /**

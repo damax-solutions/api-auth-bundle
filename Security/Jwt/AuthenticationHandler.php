@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Security\Jwt;
 
 use Damax\Bundle\ApiAuthBundle\Jwt\TokenBuilder;
+use Damax\Bundle\ApiAuthBundle\Security\ResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +19,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerI
 final class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
     private $builder;
+    private $response;
 
-    public function __construct(TokenBuilder $builder)
+    public function __construct(TokenBuilder $builder, ResponseFactory $response)
     {
         $this->builder = $builder;
+        $this->response = $response;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
@@ -39,6 +42,6 @@ final class AuthenticationHandler implements AuthenticationSuccessHandlerInterfa
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
-        return JsonResponse::create(['message' => $exception->getMessage()], Response::HTTP_UNAUTHORIZED);
+        return $this->response->createError(Response::HTTP_UNAUTHORIZED);
     }
 }

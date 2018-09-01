@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Security;
 
 use Damax\Bundle\ApiAuthBundle\Extractor\Extractor;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -19,10 +18,12 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 abstract class AbstractAuthenticator extends AbstractGuardAuthenticator
 {
     private $extractor;
+    private $response;
 
-    public function __construct(Extractor $extractor)
+    public function __construct(Extractor $extractor, ResponseFactory $response)
     {
         $this->extractor = $extractor;
+        $this->response = $response;
     }
 
     public function supports(Request $request): bool
@@ -32,7 +33,7 @@ abstract class AbstractAuthenticator extends AbstractGuardAuthenticator
 
     public function start(Request $request, AuthenticationException $authException = null): Response
     {
-        return $this->errorResponse(Response::HTTP_UNAUTHORIZED);
+        return $this->response->createError(Response::HTTP_UNAUTHORIZED);
     }
 
     public function getCredentials(Request $request): string
@@ -52,16 +53,11 @@ abstract class AbstractAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return $this->errorResponse(Response::HTTP_FORBIDDEN);
+        return $this->response->createError(Response::HTTP_FORBIDDEN);
     }
 
     public function supportsRememberMe(): bool
     {
         return false;
-    }
-
-    private function errorResponse(int $code): JsonResponse
-    {
-        return JsonResponse::create(['message' => Response::$statusTexts[$code]], $code);
     }
 }

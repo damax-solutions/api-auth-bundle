@@ -28,7 +28,9 @@ use Damax\Bundle\ApiAuthBundle\Key\Storage\Reader;
 use Damax\Bundle\ApiAuthBundle\Key\Storage\RedisStorage;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\Authenticator as ApiKeyAuthenticator;
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\StorageUserProvider;
+use Damax\Bundle\ApiAuthBundle\Security\JsonResponseFactory;
 use Damax\Bundle\ApiAuthBundle\Security\Jwt\Authenticator as JwtAuthenticator;
+use Damax\Bundle\ApiAuthBundle\Security\ResponseFactory;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
@@ -52,6 +54,8 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
             ],
         ]);
 
+        $this->assertContainerBuilderHasService(ResponseFactory::class, JsonResponseFactory::class);
+
         $this->assertContainerBuilderHasService(Generator::class, RandomGenerator::class);
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Generator::class, 0, 20);
         $this->assertContainerBuilderHasService('damax.api_auth.api_key.user_provider', StorageUserProvider::class);
@@ -64,6 +68,7 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
             ->getArgument(0)
         ;
         $this->assertEquals(ChainExtractor::class, $extractors->getClass());
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument('damax.api_auth.api_key.authenticator', 1, ResponseFactory::class);
 
         // Console
         $this->assertContainerBuilderHasServiceDefinitionWithTag(AddKeyCommand::class, 'console.command');
@@ -182,7 +187,7 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         ]);
 
         $this->assertContainerBuilderHasService('damax.api_auth.jwt.authenticator', JwtAuthenticator::class);
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument('damax.api_auth.jwt.authenticator', 2, 'username');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument('damax.api_auth.jwt.authenticator', 3, 'username');
 
         /** @var Definition $extractors */
         $extractors = $this->container
@@ -199,10 +204,12 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         $this->assertEquals('Authorization', $definitions[0]->getArgument(0));
         $this->assertEquals('Bearer', $definitions[0]->getArgument(1));
 
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument('damax.api_auth.jwt.authenticator', 1, ResponseFactory::class);
+
         /** @var Definition $parser */
         $parser = $this->container
             ->getDefinition('damax.api_auth.jwt.authenticator')
-            ->getArgument(1)
+            ->getArgument(2)
         ;
         $this->assertEquals(Parser::class, $parser->getClass());
         $this->assertEquals(['damax', 'damax-api-auth-bundle'], $parser->getArgument(2));
