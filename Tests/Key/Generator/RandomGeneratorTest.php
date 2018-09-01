@@ -23,4 +23,19 @@ class RandomGeneratorTest extends TestCase
         $this->assertTrue(40 === strlen($key2));
         $this->assertNotEquals($key1, $key2);
     }
+
+    /**
+     * @test
+     */
+    public function it_generates_smaller_key()
+    {
+        $generator = new RandomGenerator(10);
+
+        $key1 = $generator->generateKey();
+        $key2 = $generator->generateKey();
+
+        $this->assertTrue(20 === strlen($key1));
+        $this->assertTrue(20 === strlen($key2));
+        $this->assertNotEquals($key1, $key2);
+    }
 }

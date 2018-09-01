@@ -15,6 +15,6 @@ final class RandomGenerator implements Generator
 
     public function generateKey(): string
     {
-        return sha1(random_bytes($this->size));
+        return bin2hex(random_bytes($this->size));
     }
 }
