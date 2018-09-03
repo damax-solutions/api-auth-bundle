@@ -1,28 +1,40 @@
-# JWT usage
+# Basic JWT usage
 
-To enable JWT authentication the configuration is as simple as:
+## Intro
+
+To enable _JWT_ authentication the configuration could be as simple as:
 
 ```yaml
 damax_api_auth:
-    jwt: '%env(API_JWT_SECRET)%'
+    jwt: '%env(APP_SECRET)%'
 ```
 
-By default the _HS256 (HMAC SHA256)_ hashing algorithm is applied. This way of signing a token is called _symmetric_, meaning the same secret value is used to sign and verify a token.
+By default the _HS256 (HMAC SHA256)_ hashing algorithm is applied. It configures _symmetric_ signer i.e. same secret is used to sign and verify a token.
 
-Above configuration registers `damax.api_auth.jwt.authenticator` and `damax.api_auth.jwt.handler` services you need to include in `security.yml`:
+#### Routing
+
+Make sure _login_ route is present. You can use the provided controller:
+
+```yaml
+damax_api_auth_login:
+    resource: '@DamaxApiAuthBundle/Controller/SecurityController.php'
+    type: annotation
+    prefix: /api
+```
+
+#### Security
+
+Two services are registered: `damax.api_auth.jwt.authenticator` and `damax.api_auth.jwt.handler`. Consider below `security.yml` configuration:
 
 ```yaml
 security:
     encoders:
         FOS\UserBundle\Model\UserInterface: bcrypt
 
-    role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: ROLE_ADMIN
-
     providers:
         fos_userbundle:
             id: fos_user.user_provider.username
+
     firewalls:
         main:
             anonymous: true
@@ -37,15 +49,7 @@ security:
                 authenticator: damax.api_auth.jwt.authenticator
 
     access_control:
-        - { path: ^/admin/, roles: ROLE_ADMIN }
+        - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
 ```
 
-This is an example of _JWT_ authentication with [FOSUserBundle](https://github.com/FriendsOfSymfony/FOSUserBundle).
-
-To enable _security_login_ route add the following:
-
-```yaml
-# config/routes/damax_api_auth.yaml
-damax_api_auth:
-    resource: '@DamaxApiAuthBundle/Resources/config/routing/security.xml'
-```
+Above is an example of _JWT_ authentication with [FOSUserBundle](https://github.com/FriendsOfSymfony/FOSUserBundle).
