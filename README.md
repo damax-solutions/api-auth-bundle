@@ -15,12 +15,21 @@ API key or [JWT](https://jwt.io/) authentication for Symfony application.
 - Configure the chain of key extractors from cookie, query string or header.
 - Finally, implement your own [ApiKeyUserProvider](Security/ApiKey/ApiKeyUserProvider.php) for custom solution.
 
+### JWT
+
+- Support for symmetric signing for quick setup i.e. _SSH_ keys are not required.
+- Add and validate all registered claims.
+- Extend payload with any public or custom claim.
+- Refresh token functionality.
+
 ## Documentation
 
 Topics:
 
 - [Installation](Resources/doc/installation.md)
 - [Api key usage](Resources/doc/api-key.md)
+- [Basic JWT usage](Resources/doc/jwt-basic.md)
+- [Advanced JWT usage](Resources/doc/jwt-advanced.md)
 
 ## Contribute
 

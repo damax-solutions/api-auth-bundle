@@ -149,7 +149,7 @@ This will go through all the configured storage types. If found, it returns the 
 
 #### Add or remove
 
-The typical scenario is to store keys in database with caching in _Redis_, where keys disposable by their nature when ttl reaches zero.
+The typical scenario is to use database with caching in _Redis_, where keys are disposable by their nature when ttl reaches zero.
 This is an easy way to grant a temporary access to your API without making changes in the database.
 
 That being said, you need to define which storage is _writable_ i.e. add to or remove keys from:
@@ -214,7 +214,7 @@ $ curl -H "X-Auth: Token secret" https://domain.abc/api/run
 
 ## Custom user provider
 
-If you want to store keys in your own way and load custom user implementations, then implement [ApiKeyUserProvider](../../Security/ApiKey/ApiKeyUserProvider.php):
+If you want to store keys in your own way and load custom user implementation, then implement [ApiKeyUserProvider](../../Security/ApiKey/ApiKeyUserProvider.php):
 
 ```php
 use Damax\Bundle\ApiAuthBundle\Security\ApiKey\ApiKeyUserProvider;
@@ -243,3 +243,7 @@ class UserProvider implements ApiKeyUserProvider
 ```
 
 Register it in container and update `security.yml` accordingly.
+
+## Next
+
+Read next how to [authenticate with JWT](jwt-basic.md).
