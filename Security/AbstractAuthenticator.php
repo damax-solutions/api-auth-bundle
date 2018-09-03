@@ -31,9 +31,9 @@ abstract class AbstractAuthenticator extends AbstractGuardAuthenticator
         return null !== $this->extractor->extractKey($request);
     }
 
-    public function start(Request $request, AuthenticationException $authException = null): Response
+    public function start(Request $request, AuthenticationException $exception = null): Response
     {
-        return $this->response->createError(Response::HTTP_UNAUTHORIZED);
+        return $this->response->fromError(Response::HTTP_UNAUTHORIZED, $exception);
     }
 
     public function getCredentials(Request $request): string
@@ -53,7 +53,7 @@ abstract class AbstractAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return $this->response->createError(Response::HTTP_FORBIDDEN);
+        return $this->response->fromError(Response::HTTP_FORBIDDEN, $exception);
     }
 
     public function supportsRememberMe(): bool

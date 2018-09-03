@@ -21,6 +21,7 @@ API key or [JWT](https://jwt.io/) authentication for Symfony application.
 - Add and validate all registered claims.
 - Extend payload with any public or custom claim.
 - Refresh token functionality.
+- Customize success or error responses.
 
 ## Documentation
 

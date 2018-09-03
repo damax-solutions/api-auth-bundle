@@ -15,7 +15,7 @@ class JsonResponseFactoryTest extends TestCase
      */
     public function it_creates_error_response()
     {
-        $response = (new JsonResponseFactory())->createError(401);
+        $response = (new JsonResponseFactory())->fromError(401);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals('{"error":{"code":401,"message":"Unauthorized"}}', $response->getContent());
