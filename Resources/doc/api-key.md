@@ -212,6 +212,24 @@ $ curl -H "X-Auth-Token: secret" https://domain.abc/api/run
 $ curl -H "X-Auth: Token secret" https://domain.abc/api/run
 ```
 
+## Error response
+
+When user is not authenticated or when access is denied the error response is returned with _401_ and _403_ status codes respectively.
+By default the response body is in standard _Symfony_ format:
+
+```json
+{
+    "error: { "code": 401, "message": "Unathorized" }
+}
+```
+
+You can customize error response by implementing [ResponseFactory](../../Security/ResponseFactory.php), register service in container and specify in config:
+
+```yaml
+damax_api_auth:
+    response_factory_service_id: my_response_factory_service
+```
+
 ## Custom user provider
 
 If you want to store keys in your own way and load custom user implementation, then implement [ApiKeyUserProvider](../../Security/ApiKey/ApiKeyUserProvider.php):
