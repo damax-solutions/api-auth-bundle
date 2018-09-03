@@ -13,11 +13,23 @@ class JsonResponseFactoryTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_error_response()
+    public function it_creates_response_from_error()
     {
         $response = (new JsonResponseFactory())->fromError(401);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals('{"error":{"code":401,"message":"Unauthorized"}}', $response->getContent());
+        $this->assertEquals(401, $response->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_response_from_token()
+    {
+        $response = (new JsonResponseFactory())->fromToken('__jwt__');
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals('{"token":"__jwt__"}', $response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

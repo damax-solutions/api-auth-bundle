@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Damax\Bundle\ApiAuthBundle\DependencyInjection;
 
+use Damax\Bundle\ApiAuthBundle\Security\JsonResponseFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -29,6 +30,10 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+                ->scalarNode('response_factory_service_id')
+                    ->cannotBeEmpty()
+                    ->defaultValue(JsonResponseFactory::class)
+                ->end()
                 ->append($this->apiKeyNode('api_key'))
                 ->append($this->jwtNode('jwt'))
             ->end()

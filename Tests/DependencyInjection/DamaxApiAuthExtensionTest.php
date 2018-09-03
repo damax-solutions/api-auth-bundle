@@ -42,6 +42,28 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
     /**
      * @test
      */
+    public function it_registers_response_factory()
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasService(JsonResponseFactory::class);
+        $this->assertContainerBuilderHasAlias(ResponseFactory::class, JsonResponseFactory::class);
+    }
+
+    /**
+     * @test
+     */
+    public function it_registers_custom_response_factory()
+    {
+        $this->load(['response_factory_service_id' => 'factory_service_id']);
+
+        $this->assertContainerBuilderHasService(JsonResponseFactory::class);
+        $this->assertContainerBuilderHasAlias(ResponseFactory::class, 'factory_service_id');
+    }
+
+    /**
+     * @test
+     */
     public function it_registers_api_key_services()
     {
         $this->load([
@@ -53,8 +75,6 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
                 ],
             ],
         ]);
-
-        $this->assertContainerBuilderHasService(ResponseFactory::class, JsonResponseFactory::class);
 
         $this->assertContainerBuilderHasService(Generator::class, RandomGenerator::class);
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(Generator::class, 0, 20);

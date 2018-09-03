@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Damax\Bundle\ApiAuthBundle\Tests\DependencyInjection;
 
 use Damax\Bundle\ApiAuthBundle\DependencyInjection\Configuration;
+use Damax\Bundle\ApiAuthBundle\Security\JsonResponseFactory;
 use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -38,7 +39,22 @@ class ConfigurationTest extends TestCase
                     'ttl' => 3600,
                 ],
             ],
+            'response_factory_service_id' => JsonResponseFactory::class,
         ]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_configures_response_factory()
+    {
+        $config = [
+            'response_factory_service_id' => 'factory_service_id',
+        ];
+
+        $this->assertProcessedConfigurationEquals([$config], [
+            'response_factory_service_id' => 'factory_service_id',
+        ], 'response_factory_service_id');
     }
 
     /**

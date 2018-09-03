@@ -46,7 +46,8 @@ final class DamaxApiAuthExtension extends ConfigurableExtension
 {
     protected function loadInternal(array $config, ContainerBuilder $container)
     {
-        $container->register(ResponseFactory::class, JsonResponseFactory::class);
+        $container->register(JsonResponseFactory::class);
+        $container->setAlias(ResponseFactory::class, $config['response_factory_service_id']);
 
         if ($config['api_key']['enabled']) {
             $this->configureApiKey($config['api_key'], $container);
