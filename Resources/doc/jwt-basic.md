@@ -20,7 +20,10 @@ damax_api_auth_login:
     resource: '@DamaxApiAuthBundle/Controller/SecurityController.php'
     type: annotation
     prefix: /api
+    defaults: { _format: json }
 ```
+
+Default [SecurityController](../../Controller/SecurityController.php) requires [NelmioApiDocBundle](https://github.com/nelmio/NelmioApiDocBundle) to be installed.
 
 #### Security
 
@@ -29,27 +32,40 @@ Two services are registered: `damax.api_auth.jwt.authenticator` and `damax.api_a
 ```yaml
 security:
     encoders:
-        FOS\UserBundle\Model\UserInterface: bcrypt
+        Symfony\Component\Security\Core\User\User: argon2i
 
     providers:
-        fos_userbundle:
-            id: fos_user.user_provider.username
+        in_memory:
+            memory:
+                users:
+                    admin: { password: "$argon2i$v=19$m=1024,t=2,p=2$WTJhQmtQVXVKT2RXZkZoYw$Jz5CC0x+N15FoUPv35cjU27Z1ckM6x7d8J2BULq6mEk" }
 
     firewalls:
-        main:
-            anonymous: true
+        login:
+            pattern: ^/api/(login|doc)$
             stateless: true
+            anonymous: true
             json_login:
-                provider: fos_userbundle
                 check_path: security_login
                 success_handler: damax.api_auth.jwt.handler
                 failure_handler: damax.api_auth.jwt.handler
-            guard:
-                provider: fos_userbundle
-                authenticator: damax.api_auth.jwt.authenticator
 
-    access_control:
-        - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
+        main:
+            pattern: ^/api/
+            stateless: true
+            guard: { authenticator: damax.api_auth.jwt.authenticator }
 ```
 
-Above is an example of _JWT_ authentication with [FOSUserBundle](https://github.com/FriendsOfSymfony/FOSUserBundle).
+Above is the example for _in_memory_ provider. To encode your password, please, use:
+
+```bash
+$ ./bin/console security:encode-password --empty-salt Qwerty12
+```
+
+Test login functionality:
+
+```bash
+$ curl -k -X POST https://domain.abc/api/login -d '{"username": "admin", "password": "Qwerty12"}'
+```
+
+In order to access any `/api` route retrieved _JWT_ token is required.
