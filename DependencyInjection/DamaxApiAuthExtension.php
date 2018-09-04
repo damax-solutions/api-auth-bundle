@@ -39,11 +39,23 @@ use Lcobucci\JWT\Signer\Key;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-final class DamaxApiAuthExtension extends ConfigurableExtension
+final class DamaxApiAuthExtension extends ConfigurableExtension implements PrependExtensionInterface
 {
+    public function prepend(ContainerBuilder $container): void
+    {
+        $bundles = $container->getParameter('kernel.bundles');
+
+        if (isset($bundles['NelmioApiDocBundle'])) {
+            $container->prependExtensionConfig('nelmio_api_doc', [
+                'documentation' => ['definitions' => require_once __DIR__ . '/../Resources/api-doc-definitions.php'],
+            ]);
+        }
+    }
+
     protected function loadInternal(array $config, ContainerBuilder $container)
     {
         $container->register(JsonResponseFactory::class);
