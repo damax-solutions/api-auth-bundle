@@ -13,7 +13,7 @@ By default the _HS256 (HMAC SHA256)_ hashing algorithm is applied. It configures
 
 #### Routing
 
-Make sure _login_ route is present. You can use the provided controller:
+Make sure _login_ route is present. You can use the provided controller or register your own:
 
 ```yaml
 damax_api_auth_login:

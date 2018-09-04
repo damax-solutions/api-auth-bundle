@@ -39,6 +39,13 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
 {
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->container->setParameter('kernel.bundles', []);
+    }
+
     /**
      * @test
      */
@@ -264,6 +271,23 @@ class DamaxApiAuthExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithTag(TokenController::class, 'controller.service_arguments');
 
         unlink($key);
+    }
+
+    /**
+     * @test
+     */
+    public function it_configures_nelmio_api_doc_definitions()
+    {
+        $this->container->setParameter('kernel.bundles', ['NelmioApiDocBundle' => true]);
+
+        $this->load();
+
+        $config = $this->container->getExtensionConfig('nelmio_api_doc')[0];
+
+        $this->assertArrayHasKey('documentation', $config);
+        $this->assertArrayHasKey('definitions', $config['documentation']);
+        $this->assertArrayHasKey('SecurityLogin', $config['documentation']['definitions']);
+        $this->assertArrayHasKey('SecurityLoginResult', $config['documentation']['definitions']);
     }
 
     protected function getContainerExtensions(): array
