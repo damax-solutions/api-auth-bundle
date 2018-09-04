@@ -56,7 +56,7 @@ security:
             guard: { authenticator: damax.api_auth.jwt.authenticator }
 ```
 
-Above is the example for _in_memory_ provider. To encode your password, please, use:
+Above example uses _in_memory_ provider. To encode your password, please, use:
 
 ```bash
 $ ./bin/console security:encode-password --empty-salt Qwerty12
@@ -68,7 +68,7 @@ Test login functionality:
 $ curl -X POST https://domain.abc/api/login -d '{"username": "admin", "password": "Qwerty12"}'
 ```
 
-In order to access any `/api` route retrieved _JWT_ token is required.
+In order to access any `/api` route valid _JWT_ token is required.
 
 ## Extractors
 
@@ -104,7 +104,7 @@ $ curl -H "X-Auth: Token jwt" https://domain.abc/api/endpoints
 
 ## Claims
 
-By default _JWT_ payload looks something like this:
+Basic _JWT_ payload looks something like this:
 
 ```json
 {
@@ -120,7 +120,7 @@ By default _JWT_ payload looks something like this:
 
 It has 3 _timestamp_ claims, subject and custom `roles` attribute extracted from _Symfony_'s user. The default `ttl` is 1 hour.
 
-You can change `ttl` value and add `issuer` and `audience` claims:
+You can change `ttl` value, add `issuer` and `audience` claims:
 
 ```yaml
 damax_api_auth:
@@ -209,3 +209,54 @@ Payload body is the following:
   ]
 }
 ```
+
+#### Identity
+
+In order to load a user from _UserProvider_ the `sub` claim is used. Supplied _JWT_ may have different identity field.
+
+```yaml
+damax_api_auth:
+    jwt:
+        signer: '%env(APP_SECRET)%'
+        identity_claim: email
+```
+
+Now the `email` field is used as user's identity.
+
+## Authentication response
+
+You can customize authentication response by implementing [ResponseFactory](../../Security/ResponseFactory.php), register service in container and specify in config: 
+
+```yaml
+damax_api_auth:
+    response_factory_service_id: App\Security\JwtResponseFactory
+```
+
+Example:
+
+```php
+namespace App\Security;
+
+use Damax\Bundle\ApiAuthBundle\Security\JsonResponseFactory;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+class JwtResponseFactory extends JsonResponseFactory
+{
+    public function fromToken(string $token): Response
+    {
+        $data = [
+            'data' => ['token' => $token],
+            'custom' => ['foo' => 'bar', 'baz' => 'qux'],
+        ];
+
+        return JsonResponse::create($data);
+    }
+}
+```
+
+See [this section](api-key.md#error-response) how to customize error response.
+
+## Next
+
+Read next how to [configure asymmetric JWT signer](jwt-advanced.md).
