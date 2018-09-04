@@ -65,7 +65,39 @@ $ ./bin/console security:encode-password --empty-salt Qwerty12
 Test login functionality:
 
 ```bash
-$ curl -k -X POST https://domain.abc/api/login -d '{"username": "admin", "password": "Qwerty12"}'
+$ curl -X POST https://domain.abc/api/login -d '{"username": "admin", "password": "Qwerty12"}'
 ```
 
 In order to access any `/api` route retrieved _JWT_ token is required.
+
+## Extractors
+
+By default _JWT_ is expected to be found in `Authorization` header with `Bearer` prefix.
+
+Example `cURL` command:
+
+```bash
+$ curl https://domain.abc/api/endpoints -H "Authorization: Bearer jwt"
+```
+
+To fine tune extractors to search for a token in cookie, query or header, consider the following:
+
+```yaml
+damax_api_auth:
+    jwt:
+        signer: '%env(APP_SECRET)%'
+        extractors:
+            - { type: query, name: token }
+            - { type: cookie, name: token }
+            - { type: header, name: 'X-Auth-Token' }
+            - { type: header, name: 'X-Auth', prefix: Token }
+```
+
+All the following `cURL` requests are accepted for authentication:
+
+```bash
+$ curl https://domain.abc/api/endpoints?token=jwt
+$ curl --cookie "token=jwt" https://domain.abc/api/endpoints
+$ curl -H "X-Auth-Token: jwt" https://domain.abc/api/endpoints
+$ curl -H "X-Auth: Token jwt" https://domain.abc/api/endpoints
+```
