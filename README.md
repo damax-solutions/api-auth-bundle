@@ -17,7 +17,7 @@ API key or [JWT](https://jwt.io/) authentication for Symfony application.
 
 ### JWT
 
-- Support for symmetric signing for quick setup i.e. _SSH_ keys are not required.
+- Symmetric signing support for quick setup i.e. _SSH_ keys are not required.
 - Add and validate all registered claims.
 - Extend payload with any public or custom claim.
 - Refresh token functionality.
