@@ -38,7 +38,7 @@ security:
         in_memory:
             memory:
                 users:
-                    admin: { password: "$argon2i$v=19$m=1024,t=2,p=2$WTJhQmtQVXVKT2RXZkZoYw$Jz5CC0x+N15FoUPv35cjU27Z1ckM6x7d8J2BULq6mEk" }
+                    admin: { password: "$argon2i$v=19$m=1024,t=2,p=2$WTJhQmtQVXVKT2RXZkZoYw$Jz5CC0x+N15FoUPv35cjU27Z1ckM6x7d8J2BULq6mEk", roles: ROLE_API }
 
     firewalls:
         login:
@@ -100,4 +100,112 @@ $ curl https://domain.abc/api/endpoints?token=jwt
 $ curl --cookie "token=jwt" https://domain.abc/api/endpoints
 $ curl -H "X-Auth-Token: jwt" https://domain.abc/api/endpoints
 $ curl -H "X-Auth: Token jwt" https://domain.abc/api/endpoints
+```
+
+## Claims
+
+By default _JWT_ payload looks something like this:
+
+```json
+{
+  "iat": "1536070684.622099",
+  "nbf": "1536070684.622099",
+  "exp": "1536074284.622099",
+  "sub": "admin",
+  "roles": [
+    "api"
+  ]
+}
+```
+
+It has 3 _timestamp_ claims, subject and custom `roles` attribute extracted from _Symfony_'s user. The default `ttl` is 1 hour.
+
+You can change `ttl` value and add `issuer` and `audience` claims:
+
+```yaml
+damax_api_auth:
+    jwt:
+        signer: '%env(APP_SECRET)%'
+        builder:
+            ttl: 86400
+            issuer: Symfony
+            audience: App
+```
+
+The payload now looks the following:
+
+```json
+{
+  "iat": "1536074376.173030",
+  "nbf": "1536074376.173030",
+  "exp": "1536160776.173030",
+  "iss": "Symfony",
+  "aud": "App",
+  "sub": "admin",
+  "roles": [
+    "api"
+  ]
+}
+```
+
+In order to validate `issuer` and `audience` in _JWT_ add the following:
+
+```yaml
+damax_api_auth:
+    jwt:
+        signer: '%env(APP_SECRET)%'
+        parser:
+            audience: App
+            issuers:
+                - Symfony
+                - Zend
+```
+
+Parser and builder claims may be different. One application can just issue signed tokens, while other performs the work.
+In above example in order _JWT_ to validate the issuer must be either `Symfony` or `Zend` and `audience` must be `App`.
+
+You can add custom claims to the payload by implementing [Claims](../../Jwt/Claims.php) interface e.g.:
+
+```php
+namespace App\Security;
+
+use Damax\Bundle\ApiAuthBundle\Jwt\Claims;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+class IntlClaims implements Claims
+{
+    public function resolve(UserInterface $user): array
+    {
+        return [
+            self::LOCALE => 'en',
+            self::TIMEZONE => 'Europe/London',
+        ];
+    }
+}
+```
+
+Then register in container:
+
+```xml
+<service class="App\Security\IntlClaims">
+    <tag name="damax.api_auth.jwt_claims" />
+</service>
+```
+
+Payload body is the following:
+
+```json
+{
+  "locale": "en",
+  "zoneinfo": "Europe/London",
+  "iat": "1536076146.265026",
+  "nbf": "1536076146.265026",
+  "exp": "1536162546.265026",
+  "iss": "Symfony",
+  "aud": "App",
+  "sub": "admin",
+  "roles": [
+    "api"
+  ]
+}
 ```
