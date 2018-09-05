@@ -68,7 +68,7 @@ Test login functionality:
 $ curl -X POST https://domain.abc/api/login -d '{"username": "admin", "password": "Qwerty12"}'
 ```
 
-In order to access any `/api` route valid _JWT_ token is required.
+All routes with `/api/` prefix are now guarded by _JWT_ authentication.
 
 ## Extractors
 
@@ -161,8 +161,8 @@ damax_api_auth:
                 - Zend
 ```
 
-Parser and builder claims may be different. One application can just issue signed tokens, while other performs the work.
-In above example in order _JWT_ to validate the issuer must be either `Symfony` or `Zend` and `audience` must be `App`.
+Parser and builder claims may be different. One application can just issue signed tokens, while other perform the work.
+In above example in order _JWT_ to validate the `issuer` must be either `Symfony` or `Zend` and `audience` must be `App`.
 
 You can add custom claims to the payload by implementing [Claims](../../Jwt/Claims.php) interface e.g.:
 
@@ -192,7 +192,7 @@ Then register in container:
 </service>
 ```
 
-Payload body is the following:
+New payload body is the following:
 
 ```json
 {
@@ -221,7 +221,7 @@ damax_api_auth:
         identity_claim: email
 ```
 
-Now the `email` field is used as user's identity.
+The `email` field is used as user's identity in above example.
 
 ## Authentication response
 
