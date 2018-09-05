@@ -257,6 +257,35 @@ class JwtResponseFactory extends JsonResponseFactory
 
 See [this section](api-key.md#error-response) how to customize error response.
 
+## Refresh token
+
+In order to keep user _logged in_ you need a mechanism of refreshing a token. Your front-end decides when and how often existing token needs a replacement.
+[TokenController](../../Controller/TokenController.php) is provided for you or implement your own:
+
+```yaml
+damax_api_auth_refresh_token:
+    resource: '@DamaxApiAuthBundle/Controller/TokenController.php'
+    type: annotation
+    prefix: /api
+    defaults: { _format: json }
+
+# Or
+
+damax_api_auth:
+    resource: '@DamaxApiAuthBundle/Controller'
+    type: annotation
+    prefix: /api
+    defaults: { _format: json }
+```
+
+Example `cURL` command:
+
+```bash
+$ curl -X POST https://domain.abc/api/refresh-token -H "Authorization: Bearer jwt"
+```
+
+[NelmioApiDocBundle](https://github.com/nelmio/NelmioApiDocBundle) must be installed for provided controller.
+
 ## Next
 
 Read next how to [configure asymmetric JWT signer](jwt-advanced.md).
