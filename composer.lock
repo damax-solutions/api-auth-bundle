@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "3fae48df53fba5ef69755d03c7eb6add",
@@ -1707,12 +1707,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/jwt.git",
-                "reference": "3f75ff6140b13c305b6312881e4f9b1a56b9c8c6"
+                "reference": "8d8bc4bc52b4c08820b741cef078d459ca9a31d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/3f75ff6140b13c305b6312881e4f9b1a56b9c8c6",
-                "reference": "3f75ff6140b13c305b6312881e4f9b1a56b9c8c6",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/8d8bc4bc52b4c08820b741cef078d459ca9a31d8",
+                "reference": "8d8bc4bc52b4c08820b741cef078d459ca9a31d8",
                 "shasum": ""
             },
             "require": {
@@ -1765,7 +1765,7 @@
                 "JWS",
                 "jwt"
             ],
-            "time": "2018-05-29T06:59:04+00:00"
+            "time": "2018-09-16T21:02:33+00:00"
         },
         {
             "name": "matthiasnoback/symfony-config-test",
@@ -2954,16 +2954,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v4.1.4",
+            "version": "v4.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "d5f433034543bbe3b0dfa2f34e6cc85bf839846f"
+                "reference": "9b0165ea8d055ce0f5eea4051af29d4c3d7fcca2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/d5f433034543bbe3b0dfa2f34e6cc85bf839846f",
-                "reference": "d5f433034543bbe3b0dfa2f34e6cc85bf839846f",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/9b0165ea8d055ce0f5eea4051af29d4c3d7fcca2",
+                "reference": "9b0165ea8d055ce0f5eea4051af29d4c3d7fcca2",
                 "shasum": ""
             },
             "require": {
@@ -3016,7 +3016,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2018-08-27T17:47:02+00:00"
+            "time": "2018-09-21T12:49:42+00:00"
         },
         {
             "name": "symfony/polyfill-php70",
