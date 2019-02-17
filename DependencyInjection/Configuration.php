@@ -23,10 +23,10 @@ final class Configuration implements ConfigurationInterface
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('damax_api_auth');
 
         /** @var ArrayNodeDefinition $rootNode */
-        $rootNode = $treeBuilder->root('damax_api_auth');
+        $rootNode = $treeBuilder->getRootNode();
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()

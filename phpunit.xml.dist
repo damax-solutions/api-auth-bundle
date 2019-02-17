@@ -12,7 +12,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="DamaxApiAuthBundle suite">
+        <testsuite name="Project Test Suite">
             <directory>Tests</directory>
         </testsuite>
     </testsuites>

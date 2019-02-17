@@ -1,8 +1,0 @@
-#!/bin/bash
-
-rm -rf ./build
-
-phpdbg -qrr ./vendor/bin/simple-phpunit \
-    --coverage-clover=build/logs/clover.xml \
-    --log-junit=build/logs/junit.xml \
-    --coverage-html=build/phpunit
