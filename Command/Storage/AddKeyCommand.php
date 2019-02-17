@@ -40,13 +40,13 @@ final class AddKeyCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (false === $ttl = strtotime($input->getArgument('ttl'), 0)) {
+        if (false === $ttl = strtotime((string) $input->getArgument('ttl'), 0)) {
             $io->error('Invalid ttl.');
 
             return 1;
         }
 
-        $key = $this->factory->createKey($input->getArgument('identity'), $ttl);
+        $key = $this->factory->createKey((string) $input->getArgument('identity'), $ttl);
 
         $this->storage->add($key);
 

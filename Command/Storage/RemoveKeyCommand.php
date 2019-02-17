@@ -34,7 +34,7 @@ final class RemoveKeyCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->storage->remove($input->getArgument('key'));
+        $this->storage->remove((string) $input->getArgument('key'));
 
         (new SymfonyStyle($input, $output))->success('Done');
     }

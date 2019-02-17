@@ -38,7 +38,7 @@ final class LookupKeyCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $key = $this->storage->get($input->getArgument('key'));
+            $key = $this->storage->get((string) $input->getArgument('key'));
         } catch (KeyNotFound $e) {
             $io->error('Key not found.');
 
