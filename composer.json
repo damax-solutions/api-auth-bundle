@@ -5,7 +5,7 @@
   "license": "MIT",
   "require": {
     "php": "^7.1",
-    "symfony/security-bundle": "^3.4|^4.0"
+    "symfony/security-bundle": "^3.4|^4.0|^5.0"
   },
   "require-dev": {
     "doctrine/dbal": "^2.7",
